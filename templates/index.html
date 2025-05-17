@@ -1,328 +1,58 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en"> <!-- Default lang, JS will update -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat avec l'Agent RAG</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #0A246A; /* Applied Blue to page background */
-            color: #FFFFFF; /* Default text color to white for blue background */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 100vh; /* Full viewport height */
-        }
-        .chat-container {
-            background-color: #D9E2F3; /* Light blue background for chat container */
-            color: #333; /* Ensure text inside chat container is dark */
-            border-radius: 10px; /* Slightly increased border-radius for a softer look */
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2); /* Enhanced shadow for floating effect */
-            border: 1px solid #A9B4CC; /* Solid edge with a slightly darker blue-gray */
-            width: 90%;
-            max-width: 700px;
-            margin-top: 30px; /* Increased margin to enhance floating feel */
-            display: flex;
-            flex-direction: column;
-            height: calc(100vh - 120px); /* Adjusted height considering increased margin */
-            max-height: 800px; /* Max height for very tall screens */
-        }
-        h1 {
-            color: #0A246A; /* Applied Blue to header */
-            text-align: center;
-            padding: 15px;
-            margin: 0;
-            font-size: 1.5em;
-            border-bottom: 1px solid #eee;
-        }
-        .chat-window {
-            flex-grow: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-        }
-        .message {
-            padding: 10px 15px;
-            border-radius: 18px;
-            margin-bottom: 10px;
-            max-width: 75%;
-            line-height: 1.4;
-            word-wrap: break-word;
-        }
-        .user-message {
-            background-color: #0A246A; /* Applied Blue to user messages */
-            color: white;
-            align-self: flex-end;
-            border-bottom-right-radius: 5px;
-        }
-        .agent-message {
-            background-color: #e9ecef; /* Lightened agent message for contrast */
-            color: #0A246A; /* Agent message text in Blue for consistency */
-            align-self: flex-start;
-            border-bottom-left-radius: 5px;
-            white-space: pre-wrap; /* Ensures newlines and spaces are rendered */
-        }
-        .input-area {
-            display: flex;
-            padding: 15px;
-            border-top: 1px solid #eee;
-        }
-        textarea#queryInput {
-            flex-grow: 1;
-            padding: 10px;
-            border-radius: 20px;
-            border: 1px solid #ddd;
-            resize: none; /* Prevent manual resize */
-            font-size: 1rem;
-            margin-right: 10px;
-            height: 22px; /* Initial height for single line */
-            overflow-y: hidden; /* Hide scrollbar initially */
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
-        button#sendButton {
-            background-color: #FF8C00; /* Applied Orange to send button */
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: background-color 0.3s ease;
-        }
-        button#sendButton:hover {
-            background-color: #e07b00; /* Darker orange for hover */
-        }
-        button#sendButton:disabled {
-            background-color: #95a5a6;
-        }
-        .loader-chat {
-            border: 3px solid rgba(0,0,0,0.1); 
-            border-top: 3px solid #ffffff; 
-            border-radius: 50%;
-            width: 16px;
-            height: 16px;
-            animation: spin 1s linear infinite;
-            display: inline-block; 
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Styles for Action Buttons */
-        .action-buttons-container {
-            display: flex;
-            justify-content: center;
-            padding: 10px 15px 5px 15px; /* Add padding around buttons */
-            gap: 10px; /* Space between buttons */
-            border-top: 1px solid #eee; /* Separator like input-area */
-            background-color: #D9E2F3; /* Match chat container background */
-            width: 100%; /* Make it full width of the chat container */
-            box-sizing: border-box; /* Include padding and border in the element's total width and height */
-        }
-
-        .action-button {
-            background-color: #FF8C00; /* Orange */
-            color: white;
-            padding: 8px 15px;
-            border: none;
-            border-radius: 18px; /* Rounded like message bubbles */
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: background-color 0.3s ease;
-        }
-
-        .action-button:hover {
-            background-color: #e07b00; /* Darker orange */
-        }
-
-        .action-button.delete {
-            background-color: #e74c3c; /* Red for delete */
-        }
-
-        .action-button.delete:hover {
-            background-color: #c0392b; /* Darker red for delete hover */
-        }
-
-        /* Styles for Suggestion Text */
-        .suggestion-text-container {
-            padding: 8px 15px 5px 15px;
-            text-align: center; /* Center the suggestion text */
-            background-color: #D9E2F3; /* Match chat container background */
-            width: 100%;
-            box-sizing: border-box;
-            display: flex; /* Use flex to space out multiple suggestions */
-            justify-content: center; /* Center suggestions if they don't fill width */
-            gap: 15px; /* Add space between suggestion texts */
-            /* border-top: 1px solid #eee; // Optional: if you want a separator above it too */
-        }
-
-        .suggestion-text {
-            background-color: #e9ecef; /* Light greyish-blue background like agent messages */
-            color: #0A246A; /* Dark blue text, similar to action button text */
-            padding: 5px 12px; /* Padding to create a bubble effect */
-            border-radius: 15px; /* Rounded corners for the bubble */
-            font-size: 0.85rem;
-            font-style: italic;
-            cursor: pointer;
-            transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
-            border: 1px solid #ced4da; /* Subtle border */
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05); /* Subtle shadow for depth */
-        }
-
-        .suggestion-text:hover {
-            background-color: #dde2e6; /* Slightly darker on hover */
-            color: #FF8C00; /* Orange text on hover */
-            box-shadow: 0 2px 4px rgba(0,0,0,0.07); /* Slightly more pronounced shadow on hover */
-        }
-
-        /* Styles for Modal */
-        .modal {
-            display: none; 
-            position: fixed; 
-            z-index: 1000; /* Ensure it's on top */
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto; 
-            background-color: rgba(0,0,0,0.5); /* Dim background */
-        }
-
-        .modal-content {
-            background-color: #fefefe;
-            color: #333;
-            margin: 15% auto;
-            padding: 25px;
-            border: 1px solid #A9B4CC; /* Match chat container border */
-            width: 80%;
-            max-width: 450px;
-            border-radius: 10px; /* Match chat container */
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            position: relative;
-        }
-
-        .close-button {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            line-height: 1;
-        }
-
-        .close-button:hover,
-        .close-button:focus {
-            color: #FF8C00; /* Orange on hover */
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .modal-content h2 {
-            margin-top: 0;
-            color: #0A246A; /* Dark blue for heading */
-        }
-
-        .modal-content label {
-            display: block;
-            margin-top: 15px;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #555;
-        }
-
-        .modal-content input[type="text"] {
-            width: calc(100% - 22px);
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 1rem;
-        }
-
-        .modal-content button {
-            background-color: #FF8C00; /* Orange */
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
-            width: 100%;
-            margin-top: 10px;
-        }
-
-        .modal-content button:hover {
-            background-color: #e07b00; /* Darker orange */
-        }
-
-        .modal-content button.delete-confirm {
-            background-color: #e74c3c; /* Red for delete confirm */
-        }
-
-        .modal-content button.delete-confirm:hover {
-            background-color: #c0392b; /* Darker red for delete confirm hover */
-        }
-
-        /* Style for radio buttons in modal */
-        .modal-content .radio-group label {
-            margin-right: 15px;
-            font-weight: normal;
-        }
-        .modal-content .radio-group input[type="radio"] {
-            margin-right: 5px;
-        }
-
-        /* Styles for Language Switcher */
-        .language-switcher-container {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            z-index: 1010; /* Above chat container elements, below modals */
-        }
-        .language-switcher-container select {
-            padding: 5px 8px;
-            border-radius: 5px;
-            border: 1px solid #A9B4CC;
-            background-color: #f0f2f5;
-            color: #0A246A;
-            font-size: 0.9rem;
-        }
-
-    </style>
+    <title>Visa Information Assistant</title> <!-- JS will update -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <div class="chat-container" id="chatContainer">
-        <div class="language-switcher-container">
-            <select id="languageSwitcher" onchange="switchLanguage(this.value)">
-                <option value="fr">Français</option>
-                <option value="en">English</option>
-                <option value="ar">العربية</option>
-            </select>
+    <header class="site-header">
+        <div class="site-header-content">
+            <div class="logo-title">
+                <img src="{{ url_for('static', filename='../logo.png') }}" alt="Visa Assistant Logo" class="logo-img"> 
+                <h1 class="site-title" data-translate-key="mainHeader">Visa Information Assistant</h1>
+            </div>
+            <div class="language-selector">
+                <select name="language" id="languageSwitcher" onchange="switchLanguage(this.value)">
+                    <option value="fr">Français</option>
+                    <option value="en">English</option>
+                    <option value="ar">العربية</option>
+                </select>
+            </div>
         </div>
-        <h1 data-translate-key="mainHeader">Assistant d'Information Visa</h1>
-        <div class="chat-window" id="chatWindow">
-            <!-- Messages will be appended here -->
-        </div>
-        <div class="action-buttons-container">
-            <button class="action-button" onclick="openAddDocModal()" data-translate-key="addDocBtn">Ajouter Document</button>
-            <button class="action-button" onclick="openCreateCorpusModal()" data-translate-key="createCorpusBtn">Créer Corpus</button>
-            <button class="action-button" onclick="openListItemModal()" data-translate-key="listItemBtn">Lister Éléments</button>
-            <button class="action-button delete" onclick="openDeleteModal()" data-translate-key="deleteItemBtn">Supprimer Élément</button>
-        </div>
-        <div class="suggestion-text-container">
-            <span class="suggestion-text" onclick="handleVisaDocSuggestion()" data-translate-key="suggestionVisaDocs">Documents visa ?</span>
-            <span class="suggestion-text" onclick="handleCountryVisaSuggestion()" data-translate-key="suggestionCountryVisa">Visa pays ?</span>
-        </div>
-        <div class="input-area">
-            <textarea id="queryInput" placeholder="Posez votre question..." rows="1" oninput="autoGrow(this)" data-translate-key="queryPlaceholder"></textarea>
-            <button onclick="sendQuery()" id="sendButton" data-translate-key="sendBtn">Envoyer</button>
-        </div>
-    </div>
+    </header>
 
+    <!-- The main application container, now a <main> tag -->
+    <main id="chatContainer"> <!-- ID moved here for RTL toggling -->
+        <!-- The chat UI, now in .chat-box -->
+        <div class="chat-box">
+            <div class="chat-window" id="chatWindow"> 
+                <div class="chat-history">
+                    <!-- Messages will be appended here by JavaScript -->
+                </div>
+            </div>
+
+            <div class="actions"> <!-- Renamed from action-buttons-container -->
+                <button class="action-button" onclick="openAddDocModal()" data-translate-key="addDocBtn">Add Document</button>
+                <button class="action-button" onclick="openCreateCorpusModal()" data-translate-key="createCorpusBtn">Create Corpus</button>
+                <button class="action-button" onclick="openListItemModal()" data-translate-key="listItemBtn">List Items</button>
+                <button class="action-button delete-button" onclick="openDeleteModal()" data-translate-key="deleteItemBtn">Delete Item</button>
+            </div>
+
+            <div class="prompts"> <!-- Renamed from suggested-prompts-container, spans changed to buttons -->
+                <button class="prompt-chip" onclick="handleVisaDocSuggestion()" data-translate-key="suggestionVisaDocs">Documents visa ?</button>
+                <button class="prompt-chip" onclick="handleCountryVisaSuggestion()" data-translate-key="suggestionCountryVisa">Visa pays ?</button>
+            </div>
+            
+            <div class="input-row"> <!-- Renamed from input-area -->
+                <input type="text" id="queryInput" placeholder="Posez votre question..." data-translate-key="queryPlaceholder">
+                <button id="sendButton" onclick="sendQuery()" data-translate-key="sendBtn">Send</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modals will be placed here by the next edit or should remain if already outside app-container -->
     <!-- Add Document Modal -->
     <div id="addDocModal" class="modal">
         <div class="modal-content">
@@ -347,8 +77,8 @@
                 <label><input type="radio" name="deleteType" value="corpus" onchange="toggleDeleteCorpusNameField()"><span data-translate-key="deleteTypeCorpusRadio"> Corpus</span></label>
             </div>
 
-            <label for="itemName" id="itemNameLabel" data-translate-key="deleteItemNameLabelDoc">Nom du Document :</label> <!-- JS will update if corpus is chosen -->
-            <input type="text" id="itemName" name="itemName" placeholder="Entrez le nom de l'élément à supprimer" data-translate-key="deleteItemNamePlaceholder">
+            <label for="itemName" id="itemNameLabel" data-translate-key="deleteItemNameLabelDoc">Nom du Document :</label>
+            <input type="text" id="itemName" name="itemName" placeholder="Entrez le nom de l\'élément à supprimer" data-translate-key="deleteItemNamePlaceholder">
             
             <div id="deleteCorpusNameContainer">
                 <label for="deleteCorpusName" data-translate-key="deleteCorpusNameLabel">Nom du Corpus (pour document) :</label>
@@ -387,8 +117,17 @@
         </div>
     </div>
 
+    <footer class="site-footer">
+        <p class="copyright-text">© 2025 Visa AI Assistant by Seif Gzizou</p>
+        <div class="social-links">
+            <a href="#" aria-label="Facebook">Facebook</a> | 
+            <a href="#" aria-label="Twitter">Twitter</a> | 
+            <a href="#" aria-label="LinkedIn">LinkedIn</a>
+        </div>
+    </footer>
+
     <script>
-        const chatWindow = document.getElementById('chatWindow');
+        const chatHistoryEl = document.querySelector('.chat-history');
         const queryInput = document.getElementById('queryInput');
         const sendButton = document.getElementById('sendButton');
         let currentAgentMessageElement = null;
@@ -430,14 +169,14 @@
                 listItemBtn: "List Items",
                 deleteItemBtn: "Delete Item",
                 suggestionVisaDocs: "Visa documents ?",
-                suggestionCountryVisa: "Country's visa ?",
+                suggestionCountryVisa: "Country\'s visa ?",
                 queryPlaceholder: "Ask your question...",
                 sendBtn: "Send",
                 addDocModalTitle: "Add Document to Corpus",
                 addDocLinkModalLabel: "Document Link/Path:",
                 addDocLinkModalPlaceholder: "e.g., https://example.com/doc.pdf or /path/to/local/file.txt",
                 addDocCorpusModalLabel: "Corpus Name:",
-                addDocCorpusModalPlaceholder: "e.g., 'TravelPolicies'",
+                addDocCorpusModalPlaceholder: "e.g., \'TravelPolicies\'",
                 addDocModalBtn: "Add Document",
                 deleteModalTitle: "Delete Item from Knowledge Base",
                 deleteTypeDocRadio: " Document",
@@ -467,8 +206,8 @@
                 prefillCountryVisa: "Can I have info about getting a visa for ....."
             },
             fr: { // Already mostly done, but good to have it structured
-                pageTitle: "Chat avec l'Agent RAG",
-                mainHeader: "Assistant d'Information Visa",
+                pageTitle: "Chat avec l\'Agent RAG",
+                mainHeader: "Assistant d\'Information Visa",
                 addDocBtn: "Ajouter Document",
                 createCorpusBtn: "Créer Corpus",
                 listItemBtn: "Lister Éléments",
@@ -481,14 +220,14 @@
                 addDocLinkModalLabel: "Lien/Chemin du Document :",
                 addDocLinkModalPlaceholder: "ex: https://exemple.com/doc.pdf ou /chemin/vers/fichier.txt",
                 addDocCorpusModalLabel: "Nom du Corpus :",
-                addDocCorpusModalPlaceholder: "ex: 'PolitiquesVoyage'",
+                addDocCorpusModalPlaceholder: "ex: \'PolitiquesVoyage\'",
                 addDocModalBtn: "Ajouter Document",
                 deleteModalTitle: "Supprimer Élément de la Base de Connaissances",
                 deleteTypeDocRadio: " Document",
                 deleteTypeCorpusRadio: " Corpus",
                 deleteItemNameLabelDoc: "Nom du Document :",
                 deleteItemNameLabelCorpus: "Nom du Corpus :",
-                deleteItemNamePlaceholder: "Entrez le nom de l'élément à supprimer",
+                deleteItemNamePlaceholder: "Entrez le nom de l\'élément à supprimer",
                 deleteCorpusNameLabel: "Nom du Corpus (pour document) :",
                 deleteCorpusNamePlaceholder: "Entrez le nom du corpus",
                 deleteModalBtn: "Confirmer Suppression",
@@ -505,10 +244,10 @@
                 alertAddDoc: "Veuillez remplir le lien/chemin du document et le nom du corpus.",
                 alertCreateCorpus: "Veuillez entrer un nom pour le nouveau corpus.",
                 alertListCorpusEmpty: "Le nom du corpus ne peut pas être vide.",
-                alertDeleteItemName: "Veuillez entrer le nom de l'élément à supprimer.",
+                alertDeleteItemName: "Veuillez entrer le nom de l\'élément à supprimer.",
                 alertDeleteDocCorpusName: "Veuillez entrer le nom du corpus pour le document.",
                 prefillVisaDocs: "Quels sont les documents nécessaires pour une visa et la personne en question est ...",
-                prefillCountryVisa: "Puis-je avoir des informations sur l'obtention d'un visa pour ....."
+                prefillCountryVisa: "Puis-je avoir des informations sur l\'obtention d\'un visa pour ....."
             },
             ar: {
                 pageTitle: "دردشة مع وكيل RAG",
@@ -525,7 +264,7 @@
                 addDocLinkModalLabel: "رابط/مسار المستند:",
                 addDocLinkModalPlaceholder: "مثال: https://example.com/doc.pdf أو /path/to/local/file.txt",
                 addDocCorpusModalLabel: "اسم المجموعة:",
-                addDocCorpusModalPlaceholder: "مثال: 'سياسات السفر'",
+                addDocCorpusModalPlaceholder: "مثال: \'سياسات السفر\'",
                 addDocModalBtn: "إضافة مستند",
                 deleteModalTitle: "حذف عنصر من قاعدة المعرفة",
                 deleteTypeDocRadio: " مستند",
@@ -564,12 +303,12 @@
                 chatContainer.dir = 'rtl';
                 document.body.style.textAlign = 'right'; // Basic RTL alignment for body
                  // Specific adjustments for elements if flex order needs to change or for text-align on block elements
-                document.querySelectorAll('.modal-content h2, .modal-content label, .action-buttons-container, .suggestion-text-container, .input-area').forEach(el => el.style.textAlign = 'right');
+                document.querySelectorAll('.modal-content h2, .modal-content label, .actions, .prompts, .input-row').forEach(el => el.style.textAlign = 'right');
                 document.querySelectorAll('.close-button').forEach(el => el.style.float = 'left'); // Adjust close button for RTL
             } else {
                 chatContainer.dir = 'ltr';
                 document.body.style.textAlign = 'left';
-                document.querySelectorAll('.modal-content h2, .modal-content label, .action-buttons-container, .suggestion-text-container, .input-area').forEach(el => el.style.textAlign = 'left');
+                document.querySelectorAll('.modal-content h2, .modal-content label, .actions, .prompts, .input-row').forEach(el => el.style.textAlign = 'left');
                 document.querySelectorAll('.close-button').forEach(el => el.style.float = 'right');
             }
 
@@ -577,20 +316,20 @@
                 const key = element.getAttribute('data-translate-key');
                 if (translations[lang][key]) {
                     if (element.tagName === 'TEXTAREA' || element.tagName === 'INPUT') {
-                        if(element.type === 'radio') { // Special handling for radio button labels wrapped in span
-                            // Assuming the text is in a sibling span or the element itself needs to be found differently
+                        if(element.type === 'radio') { 
+                            // Already handled by span with data-translate-key
                         } else {
                             element.placeholder = translations[lang][key];
                         }
                     } else {
+                        // For buttons, h1, h2, span, label - directly set textContent
+                        // For radio button text, it's the span next to input that has the data-translate-key
                         element.textContent = translations[lang][key];
                     }
                 }
             });
-            // Update dynamic labels in modals separately if needed by current state
             toggleDeleteCorpusNameField(lang); 
-            // Also update alert messages by overriding window.alert temporarily or using a custom alert function
-            // For simplicity, we'll keep alert translations in JS functions where they are called for now.
+            toggleListItemCorpusNameField(lang); // Assuming this also takes lang for consistency
         }
 
         function switchLanguage(lang) {
@@ -602,57 +341,80 @@
             const preferredLang = localStorage.getItem('preferredLanguage') || 'fr';
             languageSwitcher.value = preferredLang;
             applyLanguage(preferredLang);
+            if(queryInput) sendButton.disabled = queryInput.value.trim() === "";
         });
 
         function autoGrow(element) {
+            if (!element) return;
             element.style.height = "5px";
             element.style.height = (element.scrollHeight) + "px";
-            if (element.scrollHeight > 150) { // Max height for textarea
+            if (element.scrollHeight > 150) { 
                 element.style.height = "150px";
                 element.style.overflowY = "auto";
             } else {
                 element.style.overflowY = "hidden";
             }
         }
-
-        queryInput.addEventListener('keypress', function(event) {
-            if (event.key === 'Enter' && !event.shiftKey) {
-                event.preventDefault();
-                sendQuery();
-            }
-        });
+        if(queryInput) {
+            queryInput.addEventListener('keypress', function(event) {
+                if (event.key === 'Enter' && !event.shiftKey) {
+                    event.preventDefault();
+                    sendQuery();
+                }
+            });
+            queryInput.addEventListener('input', () => { 
+                autoGrow(queryInput); 
+                if(sendButton) sendButton.disabled = queryInput.value.trim() === "";
+            });
+        }
 
         function appendMessage(text, senderClass, isStreaming = false) {
             let messageElement;
             if (isStreaming && currentAgentMessageElement && senderClass === 'agent-message') {
                 messageElement = currentAgentMessageElement;
-                messageElement.innerHTML += text; // Append text, not create new element
+                let p = messageElement.querySelector('p');
+                if (!p) {
+                    p = document.createElement('p');
+                    messageElement.appendChild(p);
+                }
+                p.innerHTML += text; 
             } else {
                 messageElement = document.createElement('div');
                 messageElement.classList.add('message', senderClass);
-                messageElement.textContent = text;
-                chatWindow.appendChild(messageElement);
+                const p = document.createElement('p');
                 if (senderClass === 'agent-message') {
-                    currentAgentMessageElement = messageElement; // Store for streaming
+                    p.innerHTML = text; 
+                } else {
+                    p.textContent = text; 
+                }
+                messageElement.appendChild(p);
+                chatHistoryEl.appendChild(messageElement);
+
+                if (senderClass === 'agent-message') {
+                    currentAgentMessageElement = messageElement; 
                 }
             }
-            chatWindow.scrollTop = chatWindow.scrollHeight;
+            chatHistoryEl.scrollTop = chatHistoryEl.scrollHeight;
             return messageElement;
         }
         
         function showLoaderInAgentMessage() {
-            currentAgentMessageElement = appendMessage("", 'agent-message');
+            currentAgentMessageElement = document.createElement('div');
+            currentAgentMessageElement.classList.add('message', 'agent-message');
+            const p = document.createElement('p');
+            currentAgentMessageElement.appendChild(p);
             const loaderDiv = document.createElement('div');
             loaderDiv.classList.add('loader-chat');
-            currentAgentMessageElement.appendChild(loaderDiv);
-            chatWindow.scrollTop = chatWindow.scrollHeight;
+            p.appendChild(loaderDiv); 
+            chatHistoryEl.appendChild(currentAgentMessageElement);
+            chatHistoryEl.scrollTop = chatHistoryEl.scrollHeight;
         }
 
         function removeLoaderFromAgentMessage() {
             if (currentAgentMessageElement) {
                 const loader = currentAgentMessageElement.querySelector('.loader-chat');
                 if (loader) {
-                    currentAgentMessageElement.removeChild(loader);
+                    loader.remove(); 
                 }
             }
         }
@@ -661,13 +423,20 @@
             const query = queryInput.value.trim();
             if (!query) return;
 
-            appendMessage(query, 'user-message');
+            const userMessageDiv = document.createElement('div');
+            userMessageDiv.classList.add('message', 'user-message');
+            const userP = document.createElement('p');
+            userP.textContent = query;
+            userMessageDiv.appendChild(userP);
+            chatHistoryEl.appendChild(userMessageDiv);
+            chatHistoryEl.scrollTop = chatHistoryEl.scrollHeight;
+
             queryInput.value = '';
             autoGrow(queryInput); 
             queryInput.focus();
 
-            sendButton.disabled = true;
-            showLoaderInAgentMessage(); // Show loader in a new agent bubble
+            if(sendButton) sendButton.disabled = true;
+            showLoaderInAgentMessage(); 
 
             try {
                 const response = await fetch('/query', {
@@ -676,230 +445,257 @@
                     body: JSON.stringify({ query: query })
                 });
 
-                removeLoaderFromAgentMessage(); // Remove loader once response headers are received
+                removeLoaderFromAgentMessage(); 
 
                 if (!response.ok) {
                     let errorMsg = response.statusText;
                     try {
-                        const errorData = await response.json(); // Try to parse error as JSON first
+                        const errorData = await response.json(); 
                         errorMsg = errorData.error || errorData.message || JSON.stringify(errorData);
                     } catch (e) {
-                        // If not JSON, try to get raw text for error
                         errorMsg = await response.text() || response.statusText;
                     }
-                    currentAgentMessageElement.textContent = 'Error: ' + errorMsg;
+                    if (!currentAgentMessageElement) currentAgentMessageElement = appendMessage("", 'agent-message');
+                    let pTag = currentAgentMessageElement.querySelector('p');
+                    if(!pTag) {pTag = document.createElement('p'); currentAgentMessageElement.appendChild(pTag);}
+                    pTag.textContent = 'Error: ' + errorMsg;
                     return;
                 }
+                
+                const data = await response.json();
+                if (!currentAgentMessageElement) currentAgentMessageElement = appendMessage("", 'agent-message');
+                let pTag = currentAgentMessageElement.querySelector('p');
+                if(!pTag) {pTag = document.createElement('p'); currentAgentMessageElement.appendChild(pTag);}
 
-                // Handle JSON response from the backend
-                try {
-                    const data = await response.json();
-                    if (data && data.agent_response) {
-                        if (currentAgentMessageElement.textContent === '') {
-                            currentAgentMessageElement.innerHTML = data.agent_response;
-                        } else {
-                            currentAgentMessageElement.innerHTML = data.agent_response;
-                        }
-                    } else if (data && typeof data === 'string') { // Fallback if plain text somehow sent
-                         currentAgentMessageElement.textContent = data;
-                    } 
-                    else {
-                        currentAgentMessageElement.textContent = "Agent sent an empty or malformed response.";
-                    }
-                } catch (e) {
-                    console.error("Error parsing JSON response:", e);
-                    currentAgentMessageElement.textContent = "Error: Could not parse agent's response.";
+                if (data && data.agent_response) {
+                     pTag.innerHTML = data.agent_response; 
+                } else if (data && typeof data === 'string') { 
+                     pTag.textContent = data;
+                } else {
+                    pTag.textContent = "Agent sent an empty or malformed response.";
                 }
-                chatWindow.scrollTop = chatWindow.scrollHeight;
+                chatHistoryEl.scrollTop = chatHistoryEl.scrollHeight;
 
             } catch (error) {
                 console.error("Fetch/Stream Error:", error);
                 if (currentAgentMessageElement) {
-                    currentAgentMessageElement.textContent = 'Error: Could not connect or stream from the server.';
-                } else { // If error happened before agent message bubble was created
+                    let pTag = currentAgentMessageElement.querySelector('p');
+                    if(!pTag) {pTag = document.createElement('p'); currentAgentMessageElement.appendChild(pTag);}
+                    pTag.textContent = 'Error: Could not connect or stream from the server.';
+                } else { 
                     appendMessage('Error: Could not connect or stream from the server.', 'agent-message');
                 }
             } finally {
-                sendButton.disabled = false;
+                if(sendButton) sendButton.disabled = false;
                 currentAgentMessageElement = null; 
             }
         }
 
-        // --- New Functions for Action Buttons & Modal ---
-
         function openAddDocModal() {
-            addDocModal.style.display = 'block';
+            if(addDocModal) addDocModal.style.display = 'block';
         }
 
         function closeAddDocModal() {
-            addDocModal.style.display = 'none';
-            docLinkInput.value = ''; // Clear fields on close
-            corpusNameInput.value = '';
+            if(addDocModal) addDocModal.style.display = 'none';
+            if(docLinkInput) docLinkInput.value = ''; 
+            if(corpusNameInput) corpusNameInput.value = '';
+        }
+        
+        if(submitAddDocButton){
+            submitAddDocButton.addEventListener('click', function() {
+                const link = docLinkInput.value.trim();
+                const corpus = corpusNameInput.value.trim();
+                const currentLang = localStorage.getItem('preferredLanguage') || 'fr';
+                if (link && corpus) {
+                    queryInput.value = `add this doc as new file ${link} in ${corpus}`;
+                    sendQuery();
+                    closeAddDocModal();
+                } else {
+                    alert(translations[currentLang].alertAddDoc);
+                }
+            });
         }
 
-        submitAddDocButton.addEventListener('click', function() {
-            const link = docLinkInput.value.trim();
-            const corpus = corpusNameInput.value.trim();
-            const currentLang = localStorage.getItem('preferredLanguage') || 'fr';
-            if (link && corpus) {
-                queryInput.value = `add this doc as new file ${link} in ${corpus}`;
-                sendQuery();
-                closeAddDocModal();
-            } else {
-                alert(translations[currentLang].alertAddDoc);
-            }
-        });
-
-        // Close modal if user clicks outside of the modal content
         window.addEventListener('click', function(event) {
-            if (event.target == addDocModal) {
-                closeAddDocModal();
-            }
-            if (event.target == deleteItemModal) { // Close delete modal on outside click
-                closeDeleteModal();
-            }
-            if (event.target == createCorpusModal) { 
-                closeCreateCorpusModal();
-            }
-            if (event.target == listItemModal) { 
-                closeListItemModal();
-            }
+            if (event.target == addDocModal) closeAddDocModal();
+            if (event.target == deleteItemModal) closeDeleteModal();
+            if (event.target == createCorpusModal) closeCreateCorpusModal();
+            if (event.target == listItemModal) closeListItemModal();
         });
 
-        // --- Functions for Create Corpus Modal ---
         function openCreateCorpusModal() {
-            createCorpusModal.style.display = 'block';
+            if(createCorpusModal) createCorpusModal.style.display = 'block';
         }
 
         function closeCreateCorpusModal() {
-            createCorpusModal.style.display = 'none';
-            newCorpusNameInput.value = '';
+            if(createCorpusModal) createCorpusModal.style.display = 'none';
+            if(newCorpusNameInput) newCorpusNameInput.value = '';
         }
 
-        submitCreateCorpusButton.addEventListener('click', function() {
-            const corpusName = newCorpusNameInput.value.trim();
-            const currentLang = localStorage.getItem('preferredLanguage') || 'fr';
-            if (corpusName) {
-                queryInput.value = `Create a new knowledge base named '${corpusName}'`;
-                sendQuery();
-                closeCreateCorpusModal();
-            } else {
-                alert(translations[currentLang].alertCreateCorpus);
-            }
-        });
+        if(submitCreateCorpusButton) {
+            submitCreateCorpusButton.addEventListener('click', function() {
+                const corpusName = newCorpusNameInput.value.trim();
+                const currentLang = localStorage.getItem('preferredLanguage') || 'fr';
+                if (corpusName) {
+                    queryInput.value = `Create a new knowledge base named '${corpusName}'`;
+                    sendQuery();
+                    closeCreateCorpusModal();
+                } else {
+                    alert(translations[currentLang].alertCreateCorpus);
+                }
+            });
+        }
         
-        // --- Functions for List Item Modal ---
         function openListItemModal() {
-            listItemModal.style.display = 'block';
-            document.querySelector('input[name="listType"][value="documentsInCorpus"]').checked = true;
+            if(listItemModal) listItemModal.style.display = 'block';
+            const radioToCheck = document.querySelector('input[name="listType"][value="documentsInCorpus"]');
+            if(radioToCheck) radioToCheck.checked = true;
             toggleListItemCorpusNameField();
         }
 
         function closeListItemModal() {
-            listItemModal.style.display = 'none';
-            listCorpusNameInput.value = '';
+            if(listItemModal) listItemModal.style.display = 'none';
+            if(listCorpusNameInput) listCorpusNameInput.value = '';
         }
 
-        function toggleListItemCorpusNameField() {
-            const listType = document.querySelector('input[name="listType"]:checked').value;
-            if (listType === 'documentsInCorpus') {
+        function toggleListItemCorpusNameField(lang) { 
+            const currentSelectedLang = lang || localStorage.getItem('preferredLanguage') || 'fr';
+            const listTypeRadio = document.querySelector('input[name="listType"]:checked');
+            if (!listTypeRadio || !listItemCorpusNameContainer) return; 
+
+            if (listTypeRadio.value === 'documentsInCorpus') {
                 listItemCorpusNameContainer.style.display = 'block';
-            } else { // allCorpora
+            } else { 
                 listItemCorpusNameContainer.style.display = 'none';
             }
         }
-
-        submitListItemButton.addEventListener('click', function() {
-            const listType = document.querySelector('input[name="listType"]:checked').value;
-            let prompt = '';
-            const currentLang = localStorage.getItem('preferredLanguage') || 'fr';
-            if (listType === 'documentsInCorpus') {
-                const corpusName = listCorpusNameInput.value.trim();
-                if (!corpusName) {
-                    alert(translations[currentLang].alertListCorpusEmpty);
-                    return;
+        
+        if(submitListItemButton) {
+            submitListItemButton.addEventListener('click', function() {
+                const listTypeRadio = document.querySelector('input[name="listType"]:checked');
+                if (!listTypeRadio) return; 
+                const listType = listTypeRadio.value;
+                let prompt = '';
+                const currentLang = localStorage.getItem('preferredLanguage') || 'fr';
+                if (listType === 'documentsInCorpus') {
+                    const corpusName = listCorpusNameInput.value.trim();
+                    if (!corpusName) {
+                        alert(translations[currentLang].alertListCorpusEmpty);
+                        return;
+                    }
+                    prompt = `List all documents in the corpus '${corpusName}'`;
+                } else { 
+                    prompt = `List all corpora names`;
                 }
-                prompt = `List all documents in the corpus '${corpusName}'`;
-            } else { // allCorpora
-                prompt = `List all corpora names`;
-            }
-            queryInput.value = prompt;
-            sendQuery();
-            closeListItemModal();
-        });
+                queryInput.value = prompt;
+                sendQuery();
+                closeListItemModal();
+            });
+        }
 
-        // --- Functions for Delete Modal ---
         function openDeleteModal() {
-            deleteItemModal.style.display = 'block';
-            document.querySelector('input[name="deleteType"][value="document"]').checked = true;
+            if(deleteItemModal) deleteItemModal.style.display = 'block';
+            const radioToSelect = document.querySelector('input[name="deleteType"][value="document"]');
+            if(radioToSelect) radioToSelect.checked = true;
             const currentLang = localStorage.getItem('preferredLanguage') || 'fr';
             toggleDeleteCorpusNameField(currentLang); 
         }
 
         function closeDeleteModal() {
-            deleteItemModal.style.display = 'none';
-            itemNameInput.value = '';
-            deleteCorpusNameInput.value = '';
+            if(deleteItemModal) deleteItemModal.style.display = 'none';
+            if(itemNameInput) itemNameInput.value = '';
+            if(deleteCorpusNameInput) deleteCorpusNameInput.value = '';
         }
 
         function toggleDeleteCorpusNameField(lang) {
             const currentSelectedLang = lang || localStorage.getItem('preferredLanguage') || 'fr';
-            const deleteType = document.querySelector('input[name="deleteType"]:checked').value;
-            const itemNameLabelEl = document.getElementById('itemNameLabel'); // Get the element
+            const deleteTypeRadio = document.querySelector('input[name="deleteType"]:checked');
+            const itemNameLabelEl = document.getElementById('itemNameLabel'); 
 
-            if (deleteType === 'document') {
+            if (!deleteTypeRadio || !itemNameLabelEl || !deleteCorpusNameContainer || !itemNameInput) return; 
+
+            if (deleteTypeRadio.value === 'document') {
                 deleteCorpusNameContainer.style.display = 'block';
-                itemNameLabelEl.textContent = translations[currentSelectedLang].deleteItemNameLabelDoc;
-                itemNameInput.placeholder = translations[currentSelectedLang].deleteItemNamePlaceholder; 
-            } else { // corpus
+                if(translations[currentSelectedLang]) { 
+                    itemNameLabelEl.textContent = translations[currentSelectedLang].deleteItemNameLabelDoc;
+                    itemNameInput.placeholder = translations[currentSelectedLang].deleteItemNamePlaceholder; 
+                }
+            } else { 
                 deleteCorpusNameContainer.style.display = 'none';
-                itemNameLabelEl.textContent = translations[currentSelectedLang].deleteItemNameLabelCorpus;
-                itemNameInput.placeholder = translations[currentSelectedLang].deleteItemNamePlaceholder;
+                 if(translations[currentSelectedLang]) {
+                    itemNameLabelEl.textContent = translations[currentSelectedLang].deleteItemNameLabelCorpus;
+                    itemNameInput.placeholder = translations[currentSelectedLang].deleteItemNamePlaceholder;
+                 }
             }
         }
         
-        submitDeleteItemButton.addEventListener('click', function() {
-            const deleteType = document.querySelector('input[name="deleteType"]:checked').value;
-            const itemName = itemNameInput.value.trim();
-            let prompt = '';
-            const currentLang = localStorage.getItem('preferredLanguage') || 'fr';
+        if(submitDeleteItemButton) {
+            submitDeleteItemButton.addEventListener('click', function() {
+                const deleteTypeRadio = document.querySelector('input[name="deleteType"]:checked');
+                if (!deleteTypeRadio) return; 
+                const deleteType = deleteTypeRadio.value;
+                const itemName = itemNameInput.value.trim();
+                let prompt = '';
+                const currentLang = localStorage.getItem('preferredLanguage') || 'fr';
 
-            if (!itemName) {
-                alert(translations[currentLang].alertDeleteItemName);
-                return;
-            }
-
-            if (deleteType === 'document') {
-                const corpusNameForDoc = deleteCorpusNameInput.value.trim();
-                if (!corpusNameForDoc) {
-                    alert(translations[currentLang].alertDeleteDocCorpusName);
+                if (!itemName) {
+                    alert(translations[currentLang].alertDeleteItemName);
                     return;
                 }
-                prompt = `Delete the document named '${itemName}' from the corpus '${corpusNameForDoc}'`;
-            } else { // corpus
-                prompt = `Delete the corpus named '${itemName}'`;
-            }
 
-            queryInput.value = prompt;
-            sendQuery();
-            closeDeleteModal();
-        });
+                if (deleteType === 'document') {
+                    const corpusNameForDoc = deleteCorpusNameInput.value.trim();
+                    if (!corpusNameForDoc) {
+                        alert(translations[currentLang].alertDeleteDocCorpusName);
+                        return;
+                    }
+                    prompt = `Delete the document named '${itemName}' from the corpus '${corpusNameForDoc}'`;
+                } else { 
+                    prompt = `Delete the corpus named '${itemName}'`;
+                }
 
-        // --- Function for Suggestion Button(s) ---
+                queryInput.value = prompt;
+                sendQuery();
+                closeDeleteModal();
+            });
+        }
+
         function handleVisaDocSuggestion() {
             const currentLang = localStorage.getItem('preferredLanguage') || 'fr';
-            queryInput.value = translations[currentLang].prefillVisaDocs;
-            queryInput.focus(); // Focus on the input field
-            autoGrow(queryInput); // Adjust height if needed
+            if(translations[currentLang] && queryInput) { 
+                queryInput.value = translations[currentLang].prefillVisaDocs;
+                queryInput.focus(); 
+                autoGrow(queryInput); 
+            }
         }
 
         function handleCountryVisaSuggestion() {
             const currentLang = localStorage.getItem('preferredLanguage') || 'fr';
-            queryInput.value = translations[currentLang].prefillCountryVisa;
-            queryInput.focus(); // Focus on the input field
-            autoGrow(queryInput); // Adjust height if needed
+             if(translations[currentLang] && queryInput) { 
+                queryInput.value = translations[currentLang].prefillCountryVisa;
+                queryInput.focus(); 
+                autoGrow(queryInput);
+             }
         }
+
+        // Auto-hide header on scroll
+        let lastScrollTop = 0;
+        const siteHeader = document.querySelector('.site-header');
+        const headerHeight = siteHeader ? siteHeader.offsetHeight : 70; // Fallback height
+
+        window.addEventListener("scroll", function() {
+            if (!siteHeader) return;
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            if (scrollTop > lastScrollTop && scrollTop > headerHeight) {
+                // Scroll Down
+                siteHeader.classList.add("site-header-hidden");
+            } else {
+                // Scroll Up or at top
+                siteHeader.classList.remove("site-header-hidden");
+            }
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // For Mobile or negative scrolling
+        }, false);
 
     </script>
 </body>
-</html> 
+</html>

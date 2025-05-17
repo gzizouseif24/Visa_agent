@@ -1,0 +1,434 @@
+/* General Body and Main Styles */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0; /* Added from user, good practice */
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: linear-gradient(to bottom right, #1A3A7D, #122B5A); 
+    color: #f1f5f9; 
+    box-sizing: border-box;
+}
+
+main {  /* chat wrapper - new */
+  flex: 1;                /* pushes footer down */
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Changed from center to flex-start as per user spec */
+  margin-top: 3rem;       /* space below header - from user spec */
+  margin-bottom: 4rem;    /* space above footer - from user spec */
+  width: 100%; /* ensure main takes full width to center chat-box within it */
+}
+
+/* Site Header - updated */
+header { /* was .site-header */
+  background: #0f2a6c;         /* same navy - user spec */
+  padding: 1rem 2rem; /* user spec */
+  display: flex; /* user spec */
+  align-items: center; /* user spec */
+  justify-content: space-between; /* user spec */
+  box-shadow: 0 2px 4px rgba(0,0,0,.2); /* user spec */
+  position: fixed; /* Keep fixed properties */
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1100; 
+  width: 100%;
+  transition: top 0.3s ease-in-out; 
+}
+
+header img { /* was .logo-img - user spec */
+    height: 32px; 
+    margin-right: .75rem; 
+}
+
+.site-header-hidden { /* Kept for scroll functionality */
+    top: -120px; /* Adjusted slightly, might need tuning based on new header height */
+}
+
+/* Removed .site-header-content, .logo-title, .logo as new header structure is simpler */
+
+.site-title { /* Retained for data-translate-key, ensure it fits new header */
+    color: #f1f5f9; 
+    font-size: 1.5em; 
+    font-weight: bold;
+    margin: 0;
+}
+
+header .language-selector select { /* Adjusted for new header parent */
+    background-color: #122B5A; 
+    color: #f1f5f9; 
+    border: 1px solid #2E4F8B; 
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.9em;
+    cursor: pointer;
+}
+
+header .language-selector select:focus {
+    outline: none;
+    border-color: #F9A825; 
+}
+
+/* Chat Container Box - new */
+.chat-box { /* Replaces .app-container and .chat-area styling */
+  width: 90%; /* user spec */
+  max-width: 800px; /* user spec */
+  background: #ffffff; /* user spec */
+  border-radius: 16px; /* user spec */
+  box-shadow: 0 6px 16px rgba(0,0,0,.25); /* user spec */
+  padding: 1.5rem; /* user spec */
+  color: #1e293b; /* Text color inside chat-box */
+  display: flex; /* Added to manage internal layout */
+  flex-direction: column; /* Added */
+  gap: 1rem; /* Default gap for children of chat-box */
+  margin-top: 80px; /* Added to account for fixed header height, adjust as needed */
+}
+
+
+/* .app-container styles are removed as it became <main> or is replaced by .chat-box */
+/* .chat-area styles are removed as it became .chat-box */
+
+.chat-window { /* This div wraps chat-history, keep flex for history growth */
+    display: flex; 
+    flex-direction: column; 
+    flex-grow: 1; 
+    overflow: hidden; 
+}
+
+.chat-history {
+    flex-grow: 1; 
+    overflow-y: auto; 
+    padding: 10px;
+    background-color: #f8f9fa; /* Slightly off-white for chat history background */
+    border-radius: 8px; 
+    min-height: 200px; /* Retain min-height */
+    display: flex; /* Added for message alignment */
+    flex-direction: column; /* Added for message alignment */
+    gap: 10px; /* Added for spacing between messages */
+}
+
+/* Individual Message Styles - Retained and adapted */
+.message {
+    padding: 10px 15px;
+    border-radius: 18px;
+    max-width: 75%;
+    line-height: 1.5;
+    word-wrap: break-word;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: fadeInSlideUp 0.5s forwards;
+}
+
+@keyframes fadeInSlideUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.user-message {
+    background-color: #1A3A7D; 
+    color: #f1f5f9;
+    align-self: flex-end;
+    border-bottom-right-radius: 5px;
+}
+
+.user-message p,
+.agent-message p {
+    margin: 0;
+}
+
+.agent-message {
+    background-color: #e9ecef; /* Adjusted agent message color slightly */
+    color: #1e293b;
+    align-self: flex-start;
+    border-bottom-left-radius: 5px;
+}
+
+/* Action Buttons Row - new */
+.actions { /* was .action-buttons-container */
+  display: flex; /* user spec */
+  flex-wrap: wrap; /* user spec */
+  gap: .75rem; /* user spec */
+  margin-top: 1.25rem; /* user spec */
+  justify-content: center; /* user spec */
+}
+
+.actions button { /* was .action-button */
+    padding: .5rem 1.25rem; /* user spec */
+    border-radius: 8px; /* user spec */
+    border: none; /* Keep borderless */
+    font-size: 0.9em;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    background-color: #F9A825; 
+    color: #122B5A; 
+}
+
+.actions button:hover { /* was .action-button:hover */
+    background-color: #f59e0b; 
+    transform: translateY(-2px);
+}
+
+.actions button.delete-button { /* Keep delete specific style */
+    background-color: #ef4444; 
+}
+
+.actions button.delete-button:hover {
+    background-color: #dc2626; 
+}
+
+/* Suggested Prompt Pills - new */
+.prompts { /* was .suggested-prompts-container */
+  display: flex; /* user spec */
+  gap: .5rem; /* user spec */
+  margin-top: .75rem; /* user spec */
+  justify-content: center; /* user spec */
+  flex-wrap: wrap; /* Added for responsiveness */
+}
+
+.prompts button { /* was .prompt-chip, now button */
+  background: #fff; /* user spec */
+  border: 1px solid #1e293b; /* user spec */
+  border-radius: 9999px; /* user spec */
+  padding: .25rem .75rem; /* user spec */
+  font-size: .875rem; /* user spec */
+  color: #1e293b; /* Added for consistency */
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.2s ease;
+}
+
+.prompts button:hover {
+    background-color: #1e293b; /* Darken on hover */
+    color: #ffffff; 
+    box-shadow: 0 2px 8px rgba(30, 41, 59, 0.3);
+}
+
+/* Input Row - new */
+.input-row { /* was .input-area */
+  display: flex; /* user spec */
+  gap: .75rem; /* user spec */
+  margin-top: 1.5rem; /* user spec */
+  align-items: stretch; /* Ensure button and input are same height */
+  padding-top: 10px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.input-row input { /* was .input-area textarea */
+  flex: 1; /* user spec */
+  padding: .75rem 1rem; /* user spec */
+  border: 2px solid #f97316;   /* orange - user spec */
+  border-radius: 12px; /* user spec */
+  font-size: 1em;
+  background-color: #ffffff;
+  color: #1e293b;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.input-row input:focus { /* user spec */
+    outline: none; 
+    box-shadow: 0 0 0 3px rgba(249,115,22,.3); 
+}
+
+.input-row button { /* was #sendButton */
+  padding: 0 1.5rem; /* user spec */
+  border-radius: 12px; /* user spec */
+  background: #f97316; /* user spec */
+  color: #fff; /* user spec */
+  border: none;
+  font-size: 1em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.input-row button:hover {
+    background-color: #f59e0b; /* Darker orange to match previous sendButton hover */
+}
+
+.input-row button:disabled {
+    background-color: #94a3b8; 
+    cursor: not-allowed;
+}
+
+/* Site Footer - updated */
+footer { /* was .site-footer */
+  background: #0d1b33; /* user spec */
+  color: #cbd5e1; /* user spec */
+  text-align: center; /* user spec */
+  padding: 1rem 0; /* user spec */
+  font-size: .875rem; /* user spec */
+  margin-top: auto; /* Keep for flex pushing */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+footer a { /* was .site-footer .social-links a - user spec */
+    color: #cbd5e1; 
+    margin: 0 .5rem; 
+    text-decoration: none; /* Added for completeness */
+}
+footer a:hover { /* user spec */
+    text-decoration: underline; 
+}
+/* Removed .site-footer .copyright-text and .site-footer .social-links as footer structure is simpler */
+
+/* Responsive Design Adjustments for Header and Footer */
+/* These will need review/adjustment based on the new structure and styles */
+@media (max-width: 768px) { 
+    header { padding: 0.75rem 1rem; }
+    .site-title { font-size: 1.25em; }
+    .chat-box { width: 95%; padding: 1rem; margin-top: 70px; }
+    footer { padding: 0.75rem 0; font-size: 0.8rem; }
+    /* Adjust .actions, .prompts, .input-row for smaller screens if needed */
+}
+
+@media (max-width: 480px) { 
+    header {
+        flex-direction: column; 
+        gap: 0.5rem;
+        padding: 0.75rem;
+    }
+    header .language-selector {
+        align-self: center; 
+    }
+    .chat-box { margin-top: 130px; /* Approx new header height when stacked */ }
+    /* Further adjustments for very small screens */
+    .actions button { width: calc(50% - 0.375rem); font-size: 0.85em; padding: 0.5rem 0.75rem;} /* Two buttons per row */
+    .prompts button { font-size: 0.8rem; padding: 0.25rem 0.5rem; }
+    .input-row { flex-direction: column; align-items: stretch;} 
+    .input-row input, .input-row button { width: auto; }
+    .input-row button { padding: .75rem 1rem; }
+}
+
+/* Styles for Modal - Retain these, ensure z-index and appearance is fine */
+.modal { /* ... existing modal styles ... */
+    display: none; 
+    position: fixed; 
+    z-index: 1000; 
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; 
+    background-color: rgba(0,0,0,0.6); 
+    padding-top: 60px; 
+}
+
+.modal-content { /* ... existing modal styles ... */
+    background-color: #f1f5f9; 
+    color: #1e293b; 
+    margin: 5% auto;
+    padding: 25px;
+    border: 1px solid #cbd5e1; 
+    width: 90%;
+    max-width: 500px;
+    border-radius: 12px; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    position: relative;
+}
+
+.close-button { /* ... existing modal styles ... */
+    color: #94a3b8; 
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: #F9A825; 
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-content h2 { /* ... existing modal styles ... */
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #1A3A7D; 
+    text-align: left; 
+}
+
+.modal-content label { /* ... existing modal styles ... */
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #334155; 
+    text-align: left; 
+}
+
+.modal-content input[type="text"] { /* ... existing modal styles ... */
+    width: calc(100% - 22px); 
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #cbd5e1; 
+    border-radius: 6px;
+    font-size: 1em;
+    background-color: #ffffff;
+    color: #1e293b;
+}
+
+.modal-content input[type="text"]:focus {
+    outline: none;
+    border-color: #F9A825; 
+    box-shadow: 0 0 0 2px rgba(249, 168, 37, 0.2);
+}
+
+.modal-content button { /* ... existing modal styles ... */
+    background-color: #F9A825; 
+    color: #122B5A; 
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 500;
+    width: auto; 
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.modal-content button:hover {
+    background-color: #f59e0b; 
+}
+
+.modal-content button.delete-confirm {
+    background-color: #ef4444; 
+    color: white;
+}
+
+.modal-content button.delete-confirm:hover {
+    background-color: #dc2626; 
+}
+
+.modal-content .radio-group { /* ... existing modal styles ... */
+    margin-bottom: 15px;
+    text-align: left; 
+}
+.modal-content .radio-group label {
+    margin-right: 20px;
+    font-weight: normal;
+    color: #334155;
+    display: inline-flex; 
+    align-items: center;
+}
+.modal-content .radio-group input[type="radio"] {
+    margin-right: 8px;
+    accent-color: #1A3A7D; 
+}
+
+[dir="rtl"] .modal-content h2,
+[dir="rtl"] .modal-content label,
+[dir="rtl"] .modal-content .radio-group {
+    text-align: right;
+}
+
+[dir="rtl"] .close-button {
+    float: left;
+}
+/* End of Retained Modal Styles */ 
