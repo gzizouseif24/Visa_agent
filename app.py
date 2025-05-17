@@ -139,13 +139,36 @@ def handle_query():
         logger.error(f"Error during query processing: {e}", exc_info=True)
         return jsonify({'error': str(e)}), 500
 
-if __name__ == '__main__':
-    # Ensure rag_agent is importable, re-check path if needed
-    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+@flask_app.route('/reset_session', methods=['POST'])
+def reset_session():
+    """Resets the ADK session for the current user."""
+    global actual_session_id
+    global APP_USER_ID # Ensure APP_USER_ID is accessible
+
     try:
-        from rag_agent.agent import root_agent # Ensure this import path is correct from app.py location
-    except ImportError:
-        logger.error("Could not import root_agent. Ensure app.py is in the project root or PYTHONPATH is set.")
-        sys.exit(1)
-    
+        logger.info(f"Resetting ADK session for user_id: {APP_USER_ID}...")
+        created_session = adk_app_instance.create_session(user_id=APP_USER_ID)
+        
+        new_session_id = None
+        if hasattr(created_session, 'id'):
+            new_session_id = created_session.id
+        elif isinstance(created_session, dict) and 'id' in created_session:
+            new_session_id = created_session['id']
+        else:
+            logger.error(f"Could not determine session ID from created_session during reset: {created_session}")
+            return jsonify({'error': 'Failed to get new session ID component'}), 500
+
+        actual_session_id = new_session_id
+        logger.info(f"ADK Session reset successfully. New Session ID: {actual_session_id}")
+        return jsonify({'message': 'Session reset successfully', 'new_session_id': actual_session_id}), 200
+    except Exception as e:
+        logger.error(f"Failed to reset ADK session: {e}", exc_info=True)
+        return jsonify({'error': f'Failed to reset session: {str(e)}'}), 500
+
+if __name__ == '__main__':
+    # The FLASK_APP environment variable and Flask's auto-discovery
+    # mechanisms handle locating the app object.
+    # The imports at the top of the file (from rag_agent.agent import root_agent)
+    # are sufficient, especially with WORKDIR /app in Docker.
+    # The explicit sys.path manipulation here is not required when using `flask run`.
     flask_app.run(debug=True, host='0.0.0.0', port=5000) 

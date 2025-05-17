@@ -4,15 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Visa Information Assistant</title> <!-- JS will update -->
+    <!-- Removed Fontshare CDN link placeholder as we are using local fonts -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <header class="site-header">
         <div class="site-header-content">
-            <div class="logo-title">
-                <img src="{{ url_for('static', filename='../logo.png') }}" alt="Visa Assistant Logo" class="logo-img"> 
-                <h1 class="site-title" data-translate-key="mainHeader">Visa Information Assistant</h1>
-            </div>
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Visa Assistant Logo" class="logo-img"> 
+            <h1 class="site-title" data-translate-key="mainHeader">Visa Information Assistant</h1>
             <div class="language-selector">
                 <select name="language" id="languageSwitcher" onchange="switchLanguage(this.value)">
                     <option value="fr">Français</option>
@@ -23,32 +22,38 @@
         </div>
     </header>
 
-    <!-- The main application container, now a <main> tag -->
-    <main id="chatContainer"> <!-- ID moved here for RTL toggling -->
-        <!-- The chat UI, now in .chat-box -->
-        <div class="chat-box">
-            <div class="chat-window" id="chatWindow"> 
-                <div class="chat-history">
-                    <!-- Messages will be appended here by JavaScript -->
+    <main id="chatContainer"> 
+        <div class="main-content-wrapper"> 
+            <div class="chat-area-wrapper"> <!-- Chat area now comes first in HTML for left placement -->
+                <div class="chat-box">
+                    <div class="chat-window" id="chatWindow"> 
+                        <div class="chat-header-controls">
+                            <span id="resetSessionBtn" class="chat-control-icon" title="Reset Session">&#x21BB;</span>
+                        </div>
+                        <div id="chatHistory" class="chat-history">
+                            <!-- Messages will be appended here by JavaScript -->
+                        </div>
+                    </div>
+                    <div class="prompts"> 
+                        <button class="prompt-chip" onclick="handleVisaDocSuggestion()" data-translate-key="suggestionVisaDocs">Documents visa ?</button>
+                        <button class="prompt-chip" onclick="handleCountryVisaSuggestion()" data-translate-key="suggestionCountryVisa">Visa pays ?</button>
+                    </div>
+                    <div class="input-row"> 
+                        <input type="text" id="queryInput" placeholder="Posez votre question..." data-translate-key="queryPlaceholder">
+                        <button id="sendButton" onclick="sendQuery()" data-translate-key="sendBtn">Send</button>
+                    </div>
                 </div>
             </div>
-
-            <div class="actions"> <!-- Renamed from action-buttons-container -->
-                <button class="action-button" onclick="openAddDocModal()" data-translate-key="addDocBtn">Add Document</button>
-                <button class="action-button" onclick="openCreateCorpusModal()" data-translate-key="createCorpusBtn">Create Corpus</button>
-                <button class="action-button" onclick="openListItemModal()" data-translate-key="listItemBtn">List Items</button>
-                <button class="action-button delete-button" onclick="openDeleteModal()" data-translate-key="deleteItemBtn">Delete Item</button>
-            </div>
-
-            <div class="prompts"> <!-- Renamed from suggested-prompts-container, spans changed to buttons -->
-                <button class="prompt-chip" onclick="handleVisaDocSuggestion()" data-translate-key="suggestionVisaDocs">Documents visa ?</button>
-                <button class="prompt-chip" onclick="handleCountryVisaSuggestion()" data-translate-key="suggestionCountryVisa">Visa pays ?</button>
-            </div>
-            
-            <div class="input-row"> <!-- Renamed from input-area -->
-                <input type="text" id="queryInput" placeholder="Posez votre question..." data-translate-key="queryPlaceholder">
-                <button id="sendButton" onclick="sendQuery()" data-translate-key="sendBtn">Send</button>
-            </div>
+            <aside class="sidebar"> <!-- Sidebar now comes second for right placement -->
+                <span id="sidebarToggleIcon" class="sidebar-toggle-icon" title="Toggle Sidebar">&laquo;</span>
+                <h3 data-translate-key="toolsTitle">Tools</h3>
+                <div class="actions"> 
+                    <button class="action-button" onclick="openAddDocModal()" data-translate-key="addDocBtn">Add Document</button>
+                    <button class="action-button" onclick="openCreateCorpusModal()" data-translate-key="createCorpusBtn">Create Corpus</button>
+                    <button class="action-button" onclick="openListItemModal()" data-translate-key="listItemBtn">List Items</button>
+                    <button class="action-button delete-button" onclick="openDeleteModal()" data-translate-key="deleteItemBtn">Delete Item</button>
+                </div>
+            </aside>
         </div>
     </main>
 
@@ -116,15 +121,6 @@
             <button id="submitListItem" data-translate-key="listItemModalBtn">Lister</button>
         </div>
     </div>
-
-    <footer class="site-footer">
-        <p class="copyright-text">© 2025 Visa AI Assistant by Seif Gzizou</p>
-        <div class="social-links">
-            <a href="#" aria-label="Facebook">Facebook</a> | 
-            <a href="#" aria-label="Twitter">Twitter</a> | 
-            <a href="#" aria-label="LinkedIn">LinkedIn</a>
-        </div>
-    </footer>
 
     <script>
         const chatHistoryEl = document.querySelector('.chat-history');
@@ -295,6 +291,173 @@
             }
         };
 
+        // --- Start of NEW Sidebar Toggle Script ---
+        const sidebarToggleIcon = document.getElementById('sidebarToggleIcon');
+        const mainContentWrapper = document.querySelector('.main-content-wrapper');
+        // const sidebar = document.querySelector('.sidebar'); // For observation if needed
+
+        // Ensure translations object exists (it should from previous steps)
+        // We'll use the title attribute for "Hide/Show Tools" now, or change icon content
+
+        let currentLangGlobal = 'en'; // Make sure this is correctly initialized by your existing logic
+
+        function updateSidebarToggleIconState() {
+            if (sidebarToggleIcon) {
+                if (mainContentWrapper && mainContentWrapper.classList.contains('sidebar-hidden')) {
+                    sidebarToggleIcon.innerHTML = '&raquo;'; // Icon to "open"
+                    sidebarToggleIcon.title = translations[currentLangGlobal]?.showToolsBtn || "Show Tools";
+                } else {
+                    sidebarToggleIcon.innerHTML = '&laquo;'; // Icon to "close"
+                    sidebarToggleIcon.title = translations[currentLangGlobal]?.toggleToolsBtn || "Hide Tools";
+                     // When opening, ensure the icon is in its default 'close' position immediately
+                    sidebarToggleIcon.style.transform = 'none'; // Reset any transform from hidden state
+                     if (document.documentElement.dir === 'rtl') {
+                        sidebarToggleIcon.style.left = '10px';
+                        sidebarToggleIcon.style.right = 'auto';
+                    } else {
+                        sidebarToggleIcon.style.right = '10px';
+                        sidebarToggleIcon.style.left = 'auto';
+                    }
+
+                }
+            }
+        }
+
+        if (sidebarToggleIcon && mainContentWrapper) {
+            sidebarToggleIcon.addEventListener('click', () => {
+                const isCurrentlyHidden = mainContentWrapper.classList.contains('sidebar-hidden');
+                mainContentWrapper.classList.toggle('sidebar-hidden');
+                
+                // Update icon and title
+                if (isCurrentlyHidden) { // Means we are opening it
+                    sidebarToggleIcon.innerHTML = '&laquo;'; // Change to "close" icon
+                    sidebarToggleIcon.title = translations[currentLangGlobal]?.toggleToolsBtn || "Hide Tools";
+                     // Reset icon position for open state
+                    sidebarToggleIcon.style.transform = 'none';
+                     if (document.documentElement.dir === 'rtl') {
+                        sidebarToggleIcon.style.left = '10px';
+                        sidebarToggleIcon.style.right = 'auto';
+                    } else {
+                        sidebarToggleIcon.style.right = '10px';
+                        sidebarToggleIcon.style.left = 'auto';
+                    }
+
+                } else { // Means we are closing it
+                    sidebarToggleIcon.innerHTML = '&raquo;'; // Change to "open" icon
+                    sidebarToggleIcon.title = translations[currentLangGlobal]?.showToolsBtn || "Show Tools";
+                     // CSS handles icon repositioning for hidden state, but JS sets the character
+                }
+            });
+        }
+
+        // --- Integrate with your existing switchLanguage function ---
+        const originalPageSwitchLanguageForIcon = window.switchLanguage;
+
+        window.switchLanguage = function(lang, fromDropdown = true) {
+            if (typeof originalPageSwitchLanguageForIcon === 'function' && 
+                originalPageSwitchLanguageForIcon !== window.switchLanguage) { // Prevent infinite recursion
+                originalPageSwitchLanguageForIcon(lang);
+            } else if (typeof applyLanguage === 'function' && originalPageSwitchLanguageForIcon === window.switchLanguage) {
+                // If this function has been fully overridden, call applyLanguage directly
+                // This scenario happens if the previous sidebar script completely replaced switchLanguage
+                applyLanguage(lang);
+            }
+
+
+            currentLangGlobal = lang;
+            updateSidebarToggleIconState(); // Update icon title on language change
+
+            if (fromDropdown) {
+                const languageSwitcherDropdown = document.getElementById('languageSwitcher');
+                if (languageSwitcherDropdown) languageSwitcherDropdown.value = lang;
+            }
+            // Ensure other translation updates happen
+            if (typeof updateAllModalTranslations === 'function') updateAllModalTranslations(lang);
+            if (typeof updateInputPlaceholders === 'function') updateInputPlaceholders(lang);
+        };
+        // --- End of NEW Sidebar Toggle Script ---
+
+        // Initial setup on DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', () => {
+            const languageSwitcherDropdown = document.getElementById('languageSwitcher');
+            if (languageSwitcherDropdown) {
+                currentLangGlobal = languageSwitcherDropdown.value;
+            } else {
+                currentLangGlobal = localStorage.getItem('preferredLanguage') || 'fr'; // Fallback
+            }
+            
+            // Call the switchLanguage to set everything initially, including the icon title
+            // Pass false if your switchLanguage could cause a loop or if applyLanguage is sufficient
+            if (typeof window.switchLanguage === 'function') {
+                window.switchLanguage(currentLangGlobal, false); 
+            } else if (typeof applyLanguage === 'function') { // Fallback if switchLanguage isn't fully set up yet
+                applyLanguage(currentLangGlobal);
+                updateSidebarToggleIconState(); // Still need to update icon specifically
+            }
+
+
+            // Ensure the main content is not hidden by default (remove class if present from previous state)
+            // Or, set initial icon state based on class
+            if(mainContentWrapper) { // Add this check
+               updateSidebarToggleIconState();
+            }
+
+            // Reset Session Button Logic
+            const resetBtn = document.getElementById('resetSessionBtn');
+            if (resetBtn) {
+                resetBtn.addEventListener('click', async () => {
+                    // 1. Clear chat history from UI
+                    const chatHistoryDiv = document.getElementById('chatHistory');
+                    if (chatHistoryDiv) {
+                        chatHistoryDiv.innerHTML = '';
+                    }
+
+                    // 2. Call backend to reset session
+                    try {
+                        const response = await fetch('/reset_session', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        });
+                        const data = await response.json();
+                        if (response.ok && data.message) {
+                            console.log('Session reset successfully:', data.new_session_id);
+                            // Optionally, display a system message in chat
+                            appendMessage('System', 'New session started.', false);
+                        } else {
+                            console.error('Failed to reset session:', data.error);
+                            appendMessage('System', 'Error: Could not start a new session. ' + (data.error || ''), false);
+                        }
+                    } catch (error) {
+                        console.error('Error calling /reset_session:', error);
+                        appendMessage('System', 'Error: Could not connect to server to start a new session.', false);
+                    }
+                });
+            }
+        });
+
+        // Make sure these helper functions are defined (they were in the previous JS)
+        // If not, you'll need to re-add or ensure they are defined elsewhere.
+        // function updateAllModalTranslations(lang) { ... }
+        // function updateInputPlaceholders(lang) { ... }
+        // translations object should also be defined with toggleToolsBtn and showToolsBtn
+        if (typeof translations !== 'undefined') {
+            if (!translations.en) translations.en = {};
+            translations.en.toggleToolsBtn = "Hide Tools";
+            translations.en.showToolsBtn = "Show Tools";
+
+            if (!translations.fr) translations.fr = {};
+            translations.fr.toggleToolsBtn = "Masquer Outils";
+            translations.fr.showToolsBtn = "Afficher Outils";
+
+            if (!translations.ar) translations.ar = {};
+            translations.ar.toggleToolsBtn = "إخفاء الأدوات";
+            translations.ar.showToolsBtn = "إظهار الأدوات";
+        } else {
+            // console.error("Translations object is not defined!");
+        }
+
         function applyLanguage(lang) {
             document.documentElement.lang = lang;
             document.title = translations[lang].pageTitle;
@@ -331,18 +494,6 @@
             toggleDeleteCorpusNameField(lang); 
             toggleListItemCorpusNameField(lang); // Assuming this also takes lang for consistency
         }
-
-        function switchLanguage(lang) {
-            localStorage.setItem('preferredLanguage', lang);
-            applyLanguage(lang);
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const preferredLang = localStorage.getItem('preferredLanguage') || 'fr';
-            languageSwitcher.value = preferredLang;
-            applyLanguage(preferredLang);
-            if(queryInput) sendButton.disabled = queryInput.value.trim() === "";
-        });
 
         function autoGrow(element) {
             if (!element) return;
@@ -677,24 +828,6 @@
                 autoGrow(queryInput);
              }
         }
-
-        // Auto-hide header on scroll
-        let lastScrollTop = 0;
-        const siteHeader = document.querySelector('.site-header');
-        const headerHeight = siteHeader ? siteHeader.offsetHeight : 70; // Fallback height
-
-        window.addEventListener("scroll", function() {
-            if (!siteHeader) return;
-            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            if (scrollTop > lastScrollTop && scrollTop > headerHeight) {
-                // Scroll Down
-                siteHeader.classList.add("site-header-hidden");
-            } else {
-                // Scroll Up or at top
-                siteHeader.classList.remove("site-header-hidden");
-            }
-            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // For Mobile or negative scrolling
-        }, false);
 
     </script>
 </body>

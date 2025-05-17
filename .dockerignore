@@ -1,0 +1,46 @@
+# Python virtual environment
+venv/
+.venv/
+
+# Python cache files and compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# IDE and editor specific files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+
+# Git directory and related files
+.git/
+.gitignore
+.gitattributes
+
+# Docker specific files (to avoid including them in the image context unnecessarily)
+.dockerignore
+# Dockerfile # Usually fine to include, but can be excluded
+
+# Environment files (credentials and sensitive configs should be passed at runtime)
+.env
+*.env
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Test files and directories (if you don't want them in the production image)
+# tests/
+# *.test.py
+
+# Any local configuration files or sensitive data not meant for the image
+# For example, if you ever had a local service account key for testing:
+# service-account-key.json
+
+# Build artifacts or distribution folders (if any)
+dist/
+build/
+*.egg-info/

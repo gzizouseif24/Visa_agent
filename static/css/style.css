@@ -1,150 +1,366 @@
+/* @font-face rules for Satoshi font */
+/* Assuming 'Satoshi_Complete' folder is inside 'static' folder */
+
+/* Satoshi Light */
+@font-face {
+    font-family: 'Satoshi';
+    src: url('../Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Light.woff2') format('woff2'),
+         url('../Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Light.woff') format('woff');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Satoshi';
+    src: url('../Satoshi_Complete/Fonts/WEB/fonts/Satoshi-LightItalic.woff2') format('woff2'),
+         url('../Satoshi_Complete/Fonts/WEB/fonts/Satoshi-LightItalic.woff') format('woff');
+    font-weight: 300;
+    font-style: italic;
+    font-display: swap;
+}
+
+/* Satoshi Regular */
+@font-face {
+    font-family: 'Satoshi';
+    src: url('../Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Regular.woff2') format('woff2'),
+         url('../Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Regular.woff') format('woff');
+    font-weight: 400; /* or normal */
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Satoshi';
+    src: url('../Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Italic.woff2') format('woff2'),
+         url('../Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Italic.woff') format('woff');
+    font-weight: 400; /* or normal */
+    font-style: italic;
+    font-display: swap;
+}
+
+/* Satoshi Medium */
+@font-face {
+    font-family: 'Satoshi';
+    src: url('../Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Medium.woff2') format('woff2'),
+         url('../Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Medium.woff') format('woff');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Satoshi';
+    src: url('../Satoshi_Complete/Fonts/WEB/fonts/Satoshi-MediumItalic.woff2') format('woff2'),
+         url('../Satoshi_Complete/Fonts/WEB/fonts/Satoshi-MediumItalic.woff') format('woff');
+    font-weight: 500;
+    font-style: italic;
+    font-display: swap;
+}
+
+/* Satoshi Bold */
+@font-face {
+    font-family: 'Satoshi';
+    src: url('../Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Bold.woff2') format('woff2'),
+         url('../Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Bold.woff') format('woff');
+    font-weight: 700; /* or bold */
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Satoshi';
+    src: url('../Satoshi_Complete/Fonts/WEB/fonts/Satoshi-BoldItalic.woff2') format('woff2'),
+         url('../Satoshi_Complete/Fonts/WEB/fonts/Satoshi-BoldItalic.woff') format('woff');
+    font-weight: 700; /* or bold */
+    font-style: italic;
+    font-display: swap;
+}
+
+/* Satoshi Black */
+@font-face {
+    font-family: 'Satoshi';
+    src: url('../Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Black.woff2') format('woff2'),
+         url('../Satoshi_Complete/Fonts/WEB/fonts/Satoshi-Black.woff') format('woff');
+    font-weight: 900; /* or black */
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Satoshi';
+    src: url('../Satoshi_Complete/Fonts/WEB/fonts/Satoshi-BlackItalic.woff2') format('woff2'),
+         url('../Satoshi_Complete/Fonts/WEB/fonts/Satoshi-BlackItalic.woff') format('woff');
+    font-weight: 900; /* or black */
+    font-style: italic;
+    font-display: swap;
+}
+
 /* General Body and Main Styles */
 body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    margin: 0; /* Added from user, good practice */
+    margin: 0; 
     padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: "Satoshi", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
     background: linear-gradient(to bottom right, #1A3A7D, #122B5A); 
-    color: #f1f5f9; 
+    color: #1e293b; /* Default text color changed for white header */
     box-sizing: border-box;
 }
 
-main {  /* chat wrapper - new */
-  flex: 1;                /* pushes footer down */
+main {  
+  flex: 1;                
   display: flex;
   justify-content: center;
-  align-items: flex-start; /* Changed from center to flex-start as per user spec */
-  margin-top: 3rem;       /* space below header - from user spec */
-  margin-bottom: 4rem;    /* space above footer - from user spec */
-  width: 100%; /* ensure main takes full width to center chat-box within it */
+  padding-top: 1rem; 
+  padding-bottom: 1rem; 
+  padding-left: 1rem;
+  padding-right: 1rem;
+  width: 100%; 
+  box-sizing: border-box;
+  overflow-x: hidden; 
 }
 
-/* Site Header - updated */
-header { /* was .site-header */
-  background: #0f2a6c;         /* same navy - user spec */
-  padding: 1rem 2rem; /* user spec */
-  display: flex; /* user spec */
-  align-items: center; /* user spec */
-  justify-content: space-between; /* user spec */
-  box-shadow: 0 2px 4px rgba(0,0,0,.2); /* user spec */
-  position: fixed; /* Keep fixed properties */
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1100; 
-  width: 100%;
-  transition: top 0.3s ease-in-out; 
+.main-content-wrapper { 
+    display: flex;
+    flex-grow: 1;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    gap: 1.5rem; 
 }
 
-header img { /* was .logo-img - user spec */
-    height: 32px; 
-    margin-right: .75rem; 
+.sidebar {
+    width: 240px; /* Reduced width */
+    padding: 1.25rem; /* Adjusted padding slightly */
+    background-color: #f8f9fa; 
+    border-left: 1px solid #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem; /* Adjusted gap */
+    flex-shrink: 0;
+    border-radius: 0 10px 10px 0; 
+    box-shadow: -2px 0 5px rgba(0,0,0,0.05);
+    transform: translateX(0);
+    opacity: 1;
+    transition: transform 0.35s ease-in-out, width 0.35s ease-in-out, padding 0.35s ease-in-out, opacity 0.3s ease-in-out, margin 0.35s ease-in-out;
+    overflow: visible; /* Changed from hidden to allow icon to peek if needed, or keep hidden and position icon carefully */
+    position: relative; /* For positioning the icon */
 }
 
-.site-header-hidden { /* Kept for scroll functionality */
-    top: -120px; /* Adjusted slightly, might need tuning based on new header height */
-}
-
-/* Removed .site-header-content, .logo-title, .logo as new header structure is simpler */
-
-.site-title { /* Retained for data-translate-key, ensure it fits new header */
-    color: #f1f5f9; 
-    font-size: 1.5em; 
+.sidebar-toggle-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px; /* For LTR. For RTL, this would be left */
+    font-size: 1.5rem; /* Make icon larger */
     font-weight: bold;
-    margin: 0;
+    color: #1A3A7D;
+    cursor: pointer;
+    padding: 5px;
+    z-index: 10; /* Ensure it's above other sidebar content */
+    transition: transform 0.3s ease;
+    line-height: 1;
 }
 
-header .language-selector select { /* Adjusted for new header parent */
-    background-color: #122B5A; 
-    color: #f1f5f9; 
-    border: 1px solid #2E4F8B; 
-    padding: 8px 12px;
-    border-radius: 6px;
+[dir="rtl"] .sidebar-toggle-icon {
+    right: auto;
+    left: 10px;
+}
+
+.sidebar-toggle-icon:hover {
+    color: #F9A825; /* Orange on hover */
+}
+
+.main-content-wrapper.sidebar-hidden .sidebar-toggle-icon {
+    transform: translateX(-200px); /* Adjust this to make the icon visible on the edge of the collapsed sidebar */
+    /* If sidebar width is 0, this needs to be relative to screen edge or chat-area-wrapper edge */
+    /* With width: 40px for hidden sidebar, this moves icon into that 40px space */
+     right: auto; /* Override the default right for LTR when hidden */
+     left: 8px; /* Position from left edge of the 40px bar */
+}
+
+[dir="rtl"].main-content-wrapper.sidebar-hidden .sidebar-toggle-icon {
+    transform: translateX(200px);
+    left: auto;
+    right: 8px;
+}
+
+.sidebar h3,
+.sidebar .actions {
+    transition: opacity 0.2s ease-in-out;
+}
+
+.main-content-wrapper.sidebar-hidden .sidebar h3,
+.main-content-wrapper.sidebar-hidden .sidebar .actions {
+    opacity: 0;
+    pointer-events: none; /* Prevent interaction with hidden content */
+}
+
+.sidebar h3 {
+    color: #1A3A7D; 
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 1rem; /* Adjusted margin */
+    font-size: 1.2em; /* Adjusted size */
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 0.6rem; /* Adjusted padding */
+}
+
+.sidebar .actions button { 
+    width: 100%; 
+    padding: 0.75rem 1rem; /* Increased padding */
+    text-align: left;
+    font-weight: 500;
+    /* color and background are inherited from .actions button, ensure they fit sidebar */
+}
+
+.chat-area-wrapper { 
+    flex-grow: 1;
+    display: flex; 
+    flex-direction: column;
+    min-width: 0; /* VERY IMPORTANT: Allows this flex item to shrink if its content is too wide */
+    background-color: #ffffff; /* White background for the chat area itself */
+    border-radius: 10px 0 0 10px; /* DEFAULT: Rounded left corners for side-by-side view */
+    box-shadow: 0 6px 16px rgba(0,0,0,.15); /* Softer shadow */
+    padding: 0; /* Remove padding if chat-box has its own and fills this */
+    overflow: hidden; /* Added in previous step, good for containment */
+}
+
+/* Top elements bar (header) - White background, orange title */
+header { 
+  padding: 0.75rem 1.5rem; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  width: 100%;
+  box-sizing: border-box; 
+  position: relative; 
+  z-index: 10; 
+  margin-bottom: 1rem; /* Space below header */
+  background: #ffffff; /* White background */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Very subtle shadow for white header */
+}
+
+.site-header-content { 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px; 
+}
+
+header img.logo-img { 
+    height: 55px; /* Further Increased logo height */
+    margin-right: 1rem; 
+}
+
+.site-title { 
+    color: #F9A825; /* Orange title */
+    font-size: 2em; /* Increased title size */
+    font-weight: 700; /* Bold for orange title */
+    margin: 0; 
+    text-align: center; 
+    flex-grow: 1; 
+}
+
+header .language-selector select { 
+    background-color: #f8f9fa; /* Light grey background for select on white header */
+    color: #334155; /* Dark text */
+    border: 1px solid #cbd5e1; /* Light grey border */
+    padding: 0.6rem 1rem; /* Adjusted padding */
+    border-radius: 8px;
     font-size: 0.9em;
-    cursor: pointer;
 }
 
 header .language-selector select:focus {
-    outline: none;
     border-color: #F9A825; 
+    box-shadow: 0 0 0 2px rgba(249,115,22,.2);
 }
 
-/* Chat Container Box - new */
-.chat-box { /* Replaces .app-container and .chat-area styling */
-  width: 90%; /* user spec */
-  max-width: 800px; /* user spec */
-  background: #ffffff; /* user spec */
-  border-radius: 16px; /* user spec */
-  box-shadow: 0 6px 16px rgba(0,0,0,.25); /* user spec */
-  padding: 1.5rem; /* user spec */
-  color: #1e293b; /* Text color inside chat-box */
-  display: flex; /* Added to manage internal layout */
-  flex-direction: column; /* Added */
-  gap: 1rem; /* Default gap for children of chat-box */
-  margin-top: 80px; /* Added to account for fixed header height, adjust as needed */
+/* Chat Container Box */
+.chat-box { 
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-radius: 10px; /* Rounded corners for the entire chat box area */
+  padding: 0; /* Remove padding if chat-history and input-row handle it */
+  gap: 0.25rem; /* Reduced gap */
 }
 
+.chat-window {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* To ensure chat-history scrolling works */
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  min-height: 0; /* Allow shrinking */
+  position: relative; /* For positioning child elements like header controls */
+}
 
-/* .app-container styles are removed as it became <main> or is replaced by .chat-box */
-/* .chat-area styles are removed as it became .chat-box */
+.chat-header-controls {
+    display: flex;
+    justify-content: flex-end; /* Align items to the right */
+    padding: 8px 12px;
+    border-bottom: 1px solid #eee;
+    background-color: #f9f9f9;
+    border-top-left-radius: 8px; /* Match chat-window rounding */
+    border-top-right-radius: 8px; /* Match chat-window rounding */
+}
 
-.chat-window { /* This div wraps chat-history, keep flex for history growth */
-    display: flex; 
-    flex-direction: column; 
-    flex-grow: 1; 
-    overflow: hidden; 
+.chat-control-icon {
+    font-size: 1.25rem;
+    color: #555;
+    cursor: pointer;
+    padding: 2px;
+    transition: color 0.2s ease;
+}
+
+.chat-control-icon:hover {
+    color: #007bff; /* Or your primary theme color */
 }
 
 .chat-history {
-    flex-grow: 1; 
-    overflow-y: auto; 
-    padding: 10px;
-    background-color: #f8f9fa; /* Slightly off-white for chat history background */
-    border-radius: 8px; 
-    min-height: 200px; /* Retain min-height */
-    display: flex; /* Added for message alignment */
-    flex-direction: column; /* Added for message alignment */
-    gap: 10px; /* Added for spacing between messages */
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem; /* Space between messages */
+  background-color: #ffffff; /* Chat history background */
+  border-radius: 8px;
+}
+
+.message p {
+    margin: 0;
+    font-family: "Satoshi", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; /* Explicitly set Satoshi for messages */
+    /* Other existing .message p styles */
 }
 
 /* Individual Message Styles - Retained and adapted */
 .message {
-    padding: 10px 15px;
-    border-radius: 18px;
-    max-width: 75%;
-    line-height: 1.5;
-    word-wrap: break-word;
-    opacity: 0;
-    transform: translateY(10px);
-    animation: fadeInSlideUp 0.5s forwards;
-}
-
-@keyframes fadeInSlideUp {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  padding: 0.75rem 1rem;
+  border-radius: 18px; /* Rounded bubbles */
+  max-width: 70%;
+  line-height: 1.4;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .user-message {
-    background-color: #1A3A7D; 
-    color: #f1f5f9;
-    align-self: flex-end;
-    border-bottom-right-radius: 5px;
-}
-
-.user-message p,
-.agent-message p {
-    margin: 0;
+  background-color: #007bff; /* Example: Blue for user */
+  color: white;
+  align-self: flex-end;
+  margin-left: auto; /* Pushes to the right */
+  border-bottom-right-radius: 5px; /* Slightly different rounding for "tail" effect */
 }
 
 .agent-message {
-    background-color: #e9ecef; /* Adjusted agent message color slightly */
-    color: #1e293b;
-    align-self: flex-start;
-    border-bottom-left-radius: 5px;
+  background-color: #e9ecef; /* Example: Light grey for agent */
+  color: #333;
+  align-self: flex-start;
+  margin-right: auto; /* Pushes to the left */
+  border-bottom-left-radius: 5px; /* Slightly different rounding for "tail" effect */
 }
 
 /* Action Buttons Row - new */
@@ -181,72 +397,77 @@ header .language-selector select:focus {
     background-color: #dc2626; 
 }
 
-/* Suggested Prompt Pills - new */
-.prompts { /* was .suggested-prompts-container */
-  display: flex; /* user spec */
-  gap: .5rem; /* user spec */
-  margin-top: .75rem; /* user spec */
-  justify-content: center; /* user spec */
-  flex-wrap: wrap; /* Added for responsiveness */
+/* Suggested Prompt Pills - Reduced area and increased contrast */
+.prompts { 
+  padding: 0.25rem 0.5rem; /* Reduced padding */
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 0; /* Remove top margin */
+  margin-bottom: 0.25rem; /* Small margin above input row */
+  flex-shrink: 0;
 }
 
-.prompts button { /* was .prompt-chip, now button */
-  background: #fff; /* user spec */
-  border: 1px solid #1e293b; /* user spec */
-  border-radius: 9999px; /* user spec */
-  padding: .25rem .75rem; /* user spec */
-  font-size: .875rem; /* user spec */
-  color: #1e293b; /* Added for consistency */
+.prompts button {
+  background-color: #f0f0f0; /* Light grey background for prompts */
+  color: #333; /* Darker text for contrast */
+  border: 1px solid #ccc;
+  padding: 0.375rem 0.75rem;
+  border-radius: 15px;
+  font-size: 0.8rem;
   cursor: pointer;
-  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.2s ease;
+  transition: background-color 0.2s ease;
 }
 
 .prompts button:hover {
-    background-color: #1e293b; /* Darken on hover */
-    color: #ffffff; 
-    box-shadow: 0 2px 8px rgba(30, 41, 59, 0.3);
+  background-color: #e0e0e0;
+  border-color: #bbb;
 }
 
 /* Input Row - new */
-.input-row { /* was .input-area */
-  display: flex; /* user spec */
-  gap: .75rem; /* user spec */
-  margin-top: 1.5rem; /* user spec */
-  align-items: stretch; /* Ensure button and input are same height */
-  padding-top: 10px;
-  border-top: 1px solid #e2e8f0;
+.input-row {
+  display: flex;
+  align-items: stretch; /* Changed to stretch to ensure items fill height */
+  padding: 0.5rem;
+  gap: 0.5rem;
+  background-color: #f8f9fa;
+  border-top: 1px solid #ddd;
+  border-bottom-left-radius: 8px; /* Match chat-window */
+  border-bottom-right-radius: 8px; /* Match chat-window */
+  margin-top: 0; /* Remove top margin */
 }
 
-.input-row input { /* was .input-area textarea */
-  flex: 1; /* user spec */
-  padding: .75rem 1rem; /* user spec */
-  border: 2px solid #f97316;   /* orange - user spec */
-  border-radius: 12px; /* user spec */
-  font-size: 1em;
-  background-color: #ffffff;
-  color: #1e293b;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+#queryInput {
+  flex-grow: 1;
+  padding: 0.75rem;
+  border: 1px solid #ced4da;
+  border-radius: 20px; /* More rounded input */
+  font-size: 1rem;
+  resize: none;
+  min-height: 40px; /* Ensure a minimum height */
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
 }
 
-.input-row input:focus { /* user spec */
-    outline: none; 
-    box-shadow: 0 0 0 3px rgba(249,115,22,.3); 
-}
-
-.input-row button { /* was #sendButton */
-  padding: 0 1.5rem; /* user spec */
-  border-radius: 12px; /* user spec */
-  background: #f97316; /* user spec */
-  color: #fff; /* user spec */
+.input-row button {
+  background-color: #fd7e14; /* Your orange send button color */
+  color: white;
   border: none;
-  font-size: 1em;
-  font-weight: 500;
+  padding: 0.75rem 1.25rem;
+  border-radius: 20px; /* Match input rounding */
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  font-size: 1rem;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center; /* Vertically center content in button if it's text */
+  justify-content: center; /* Horizontally center content */
+  min-height: 40px; /* Match input min-height */
+  box-sizing: border-box; /* Include padding and border */
 }
 
 .input-row button:hover {
-    background-color: #f59e0b; /* Darker orange to match previous sendButton hover */
+  background-color: #e66a00; /* Darker orange on hover */
 }
 
 .input-row button:disabled {
@@ -254,54 +475,59 @@ header .language-selector select:focus {
     cursor: not-allowed;
 }
 
-/* Site Footer - updated */
-footer { /* was .site-footer */
-  background: #0d1b33; /* user spec */
-  color: #cbd5e1; /* user spec */
-  text-align: center; /* user spec */
-  padding: 1rem 0; /* user spec */
-  font-size: .875rem; /* user spec */
-  margin-top: auto; /* Keep for flex pushing */
-  width: 100%;
-  box-sizing: border-box;
+/* Responsive Design Adjustments */
+@media (max-width: 992px) {
+    .main-content-wrapper {
+        flex-direction: column;
+    }
+    .sidebar {
+        width: 100%;
+        border-left: none;
+        border-top: 1px solid #e0e0e0;
+        border-radius: 0 0 10px 10px; /* Adjust rounding for bottom position */
+        max-height: 40vh; /* Limit height when stacked */
+        overflow-y: auto;
+    }
+    .chat-area-wrapper {
+        border-radius: 10px 10px 0 0; /* STACKED VIEW: Rounded top corners */
+    }
 }
 
-footer a { /* was .site-footer .social-links a - user spec */
-    color: #cbd5e1; 
-    margin: 0 .5rem; 
-    text-decoration: none; /* Added for completeness */
-}
-footer a:hover { /* user spec */
-    text-decoration: underline; 
-}
-/* Removed .site-footer .copyright-text and .site-footer .social-links as footer structure is simpler */
-
-/* Responsive Design Adjustments for Header and Footer */
-/* These will need review/adjustment based on the new structure and styles */
 @media (max-width: 768px) { 
-    header { padding: 0.75rem 1rem; }
-    .site-title { font-size: 1.25em; }
-    .chat-box { width: 95%; padding: 1rem; margin-top: 70px; }
-    footer { padding: 0.75rem 0; font-size: 0.8rem; }
-    /* Adjust .actions, .prompts, .input-row for smaller screens if needed */
+    header { padding: 0.5rem 1rem; margin-bottom: 0.5rem; }
+    .site-title { font-size: 1.7em; }
+    header img.logo-img { height: 45px; }
+    .sidebar { padding: 0.75rem; }
+    .chat-box { padding: 1rem; }
+    .message {
+        max-width: 85%; /* Allow messages to be a bit wider on smaller screens */
+    }
+    .input-row {
+        padding: 0.5rem; /* Slightly reduce padding on small screens */
+    }
+    #queryInput {
+        padding: 0.6rem;
+        font-size: 0.9rem;
+    }
+    .input-row button {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+    }
+    .prompts button {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.75rem;
+    }
 }
 
 @media (max-width: 480px) { 
-    header {
-        flex-direction: column; 
-        gap: 0.5rem;
-        padding: 0.75rem;
+    header .site-header-content {
+        gap: 0.5rem; 
     }
-    header .language-selector {
-        align-self: center; 
-    }
-    .chat-box { margin-top: 130px; /* Approx new header height when stacked */ }
-    /* Further adjustments for very small screens */
-    .actions button { width: calc(50% - 0.375rem); font-size: 0.85em; padding: 0.5rem 0.75rem;} /* Two buttons per row */
-    .prompts button { font-size: 0.8rem; padding: 0.25rem 0.5rem; }
-    .input-row { flex-direction: column; align-items: stretch;} 
-    .input-row input, .input-row button { width: auto; }
-    .input-row button { padding: .75rem 1rem; }
+    .site-title { font-size: 1.5em; } 
+    header img.logo-img { height: 40px; }
+    .sidebar h3 { font-size: 1.2em; }
+    .sidebar .actions button { padding: 0.6rem 0.75rem; font-size: 0.85em; }
+    .chat-box { padding: 0.75rem; }
 }
 
 /* Styles for Modal - Retain these, ensure z-index and appearance is fine */
@@ -431,4 +657,84 @@ footer a:hover { /* user spec */
 [dir="rtl"] .close-button {
     float: left;
 }
-/* End of Retained Modal Styles */ 
+/* End of Retained Modal Styles */
+
+/* Sidebar Hidden State */
+.main-content-wrapper.sidebar-hidden .sidebar {
+    width: 40px; /* Shrink to this width to show icon */
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0.5rem; /* Minimal padding */
+    padding-bottom: 0.5rem;
+    overflow: hidden; /* Hide overflowing content */
+    /* transform: translateX(calc(100% - 40px)); NO, translateX(0) is fine, width changes */
+    /* Opacity of sidebar itself remains 1, only content fades */
+}
+
+/* The chat area wrapper still needs to expand */
+.main-content-wrapper.sidebar-hidden .chat-area-wrapper {
+    border-radius: 10px; /* Fully rounded when sidebar is hidden */
+    /* It will naturally take more space due to flex-grow */
+}
+
+/* Responsive view for hidden sidebar */
+@media (max-width: 992px) {
+    .main-content-wrapper.sidebar-hidden .sidebar {
+        width: 100%; /* Full width when stacked */
+        height: 40px; /* Shrink height to show icon */
+        padding-top: 0;
+        padding-bottom: 0;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+        transform: translateY(0); /* Don't slide down, just shrink height */
+        border-top: 1px solid #e0e0e0; 
+    }
+
+    .main-content-wrapper.sidebar-hidden .sidebar-toggle-icon {
+        transform: none; /* Reset transform */
+        position: absolute; /* Keep it absolutely positioned within the 40px height */
+        top: 50%;
+        transform: translateY(-50%); 
+        /* right/left positioning for LTR/RTL from parent .sidebar already set */
+    }
+    
+    [dir="ltr"].main-content-wrapper.sidebar-hidden .sidebar-toggle-icon {
+        right: 10px; 
+        left: auto;
+    }
+    [dir="rtl"].main-content-wrapper.sidebar-hidden .sidebar-toggle-icon {
+        left: 10px;
+        right: auto;
+    }
+
+    .main-content-wrapper.sidebar-hidden .sidebar h3,
+    .main-content-wrapper.sidebar-hidden .sidebar .actions {
+        opacity: 0; /* Content still hidden */
+    }
+}
+
+@media (max-width: 768px) {
+    .main-content-wrapper.sidebar-hidden .sidebar {
+        transform: translateY(100%); /* Slide down when stacked */
+        height: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+        border-top: none;
+    }
+    .main-content-wrapper.sidebar-hidden .chat-area-wrapper {
+        border-radius: 10px; /* Still fully rounded */
+    }
+}
+
+@media (max-width: 480px) {
+    .main-content-wrapper.sidebar-hidden .sidebar {
+        transform: translateY(100%); /* Slide down when stacked */
+        height: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+        border-top: none;
+    }
+    .main-content-wrapper.sidebar-hidden .chat-area-wrapper {
+        border-radius: 10px; /* Still fully rounded */
+    }
+} 
