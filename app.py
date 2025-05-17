@@ -5,6 +5,7 @@ from flask import Flask, request, jsonify, render_template, Response # Added Res
 from dotenv import load_dotenv
 import vertexai # Ensure vertexai is imported for init if not already by rag_agent
 from vertexai.preview import reasoning_engines
+from markdown_it import MarkdownIt # Import MarkdownIt
 
 # Attempt to import the agent and trigger its __init__.py for Vertex AI setup
 try:
@@ -104,8 +105,9 @@ def handle_query():
     if not user_query:
         return jsonify({'error': 'No query provided'}), 400
 
-    def generate_agent_responses():
-        logger.info(f"Streaming query: '{user_query}' for session: {actual_session_id}")
+    collected_texts = []
+    try:
+        logger.info(f"Processing query: '{user_query}' for session: {actual_session_id}")
         for event in adk_app_instance.stream_query(
             user_id=APP_USER_ID,
             session_id=actual_session_id,
@@ -120,14 +122,21 @@ def handle_query():
                         for part_item in parts_list:
                             if isinstance(part_item, dict) and 'text' in part_item and part_item.get('text') is not None:
                                 text_chunk = part_item['text']
-                                logger.debug(f"Yielding text chunk: {text_chunk}")
-                                yield text_chunk # Stream each text chunk
-        logger.info("Finished streaming agent response.")
+                                logger.debug(f"Collecting text chunk: {text_chunk}")
+                                collected_texts.append(text_chunk)
+        
+        full_response = "".join(collected_texts)
+        logger.info(f"Finished processing agent response. Full response (raw): {full_response[:200]}...")
 
-    try:
-        return Response(generate_agent_responses(), mimetype='text/plain')
+        # Convert Markdown to HTML
+        md = MarkdownIt()
+        html_response = md.render(full_response)
+        logger.info(f"Converted HTML response: {html_response[:200]}...")
+        
+        return jsonify({'agent_response': html_response})
+
     except Exception as e:
-        logger.error(f"Error during query streaming: {e}", exc_info=True)
+        logger.error(f"Error during query processing: {e}", exc_info=True)
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
