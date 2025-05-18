@@ -4,3 +4,5 @@ google-genai==1.14.0
 gitpython==3.1.40
 google-adk==0.5.0
 Flask>=2.0.0
+markdown-it-py==2.2.0
+markdown_it==13.0.1

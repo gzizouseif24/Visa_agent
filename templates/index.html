@@ -160,6 +160,7 @@
             en: {
                 pageTitle: "RAG Agent Chat",
                 mainHeader: "Visa Information Assistant",
+                toolsTitle: "Tools",
                 addDocBtn: "Add Document",
                 createCorpusBtn: "Create Corpus",
                 listItemBtn: "List Items",
@@ -204,6 +205,7 @@
             fr: { // Already mostly done, but good to have it structured
                 pageTitle: "Chat avec l\'Agent RAG",
                 mainHeader: "Assistant d\'Information Visa",
+                toolsTitle: "Outils",
                 addDocBtn: "Ajouter Document",
                 createCorpusBtn: "Créer Corpus",
                 listItemBtn: "Lister Éléments",
@@ -248,6 +250,7 @@
             ar: {
                 pageTitle: "دردشة مع وكيل RAG",
                 mainHeader: "مساعد معلومات التأشيرة",
+                toolsTitle: "أدوات",
                 addDocBtn: "إضافة مستند",
                 createCorpusBtn: "إنشاء مجموعة مستندات",
                 listItemBtn: "عرض العناصر",
@@ -291,115 +294,161 @@
             }
         };
 
-        // --- Start of NEW Sidebar Toggle Script ---
+        // Helper function to update modal-specific translations if they exist
+        // You might need to create/refine this based on your modal structure
+        function updateAllModalTranslations(lang) {
+            // This is a placeholder. Implement according to how your modals store/update text.
+            // Example: If modals also use data-translate-key, applyLanguage might cover them
+            // or they might need specific updates if their text is set differently.
+            // console.log("Updating modal translations for:", lang);
+
+            // Specifically for deleteItemModal's dynamic label:
+            if (typeof toggleDeleteCorpusNameField === "function") {
+                toggleDeleteCorpusNameField(lang);
+            }
+            // Specifically for listItemModal's dynamic label (if applicable):
+             if (typeof toggleListItemCorpusNameField === "function") {
+                toggleListItemCorpusNameField(lang);
+            }
+        }
+
+        // Helper function to update input placeholders if they exist
+        function updateInputPlaceholders(lang) {
+            const currentTranslations = translations[lang];
+            if (!currentTranslations) return;
+
+            const queryInputEl = document.getElementById('queryInput');
+            if (queryInputEl && currentTranslations.queryPlaceholder) {
+                queryInputEl.placeholder = currentTranslations.queryPlaceholder;
+            }
+            // Add other input placeholders here if they are not covered by data-translate-key
+        }
+        
+        // --- Start of Sidebar Toggle Script (core logic) ---
         const sidebarToggleIcon = document.getElementById('sidebarToggleIcon');
         const mainContentWrapper = document.querySelector('.main-content-wrapper');
-        // const sidebar = document.querySelector('.sidebar'); // For observation if needed
+        let currentLangGlobal = 'en'; // Will be updated by switchLanguage
 
-        // Ensure translations object exists (it should from previous steps)
-        // We'll use the title attribute for "Hide/Show Tools" now, or change icon content
+        // Add sidebar toggle button translations if not already present
+        if (typeof translations !== 'undefined') {
+            if (!translations.en) translations.en = {};
+            translations.en.toggleToolsBtn = "Hide Tools";
+            translations.en.showToolsBtn = "Show Tools";
 
-        let currentLangGlobal = 'en'; // Make sure this is correctly initialized by your existing logic
+            if (!translations.fr) translations.fr = {};
+            translations.fr.toggleToolsBtn = "Masquer Outils";
+            translations.fr.showToolsBtn = "Afficher Outils";
+
+            if (!translations.ar) translations.ar = {};
+            translations.ar.toggleToolsBtn = "إخفاء الأدوات";
+            translations.ar.showToolsBtn = "إظهار الأدوات";
+        }
 
         function updateSidebarToggleIconState() {
-            if (sidebarToggleIcon) {
+            if (sidebarToggleIcon && translations[currentLangGlobal]) {
                 if (mainContentWrapper && mainContentWrapper.classList.contains('sidebar-hidden')) {
                     sidebarToggleIcon.innerHTML = '&raquo;'; // Icon to "open"
-                    sidebarToggleIcon.title = translations[currentLangGlobal]?.showToolsBtn || "Show Tools";
+                    sidebarToggleIcon.title = translations[currentLangGlobal].showToolsBtn || "Show Tools";
                 } else {
                     sidebarToggleIcon.innerHTML = '&laquo;'; // Icon to "close"
-                    sidebarToggleIcon.title = translations[currentLangGlobal]?.toggleToolsBtn || "Hide Tools";
-                     // When opening, ensure the icon is in its default 'close' position immediately
-                    sidebarToggleIcon.style.transform = 'none'; // Reset any transform from hidden state
-                     if (document.documentElement.dir === 'rtl') {
+                    sidebarToggleIcon.title = translations[currentLangGlobal].toggleToolsBtn || "Hide Tools";
+                    sidebarToggleIcon.style.transform = 'none'; 
+                    if (document.documentElement.dir === 'rtl') {
                         sidebarToggleIcon.style.left = '10px';
                         sidebarToggleIcon.style.right = 'auto';
                     } else {
                         sidebarToggleIcon.style.right = '10px';
                         sidebarToggleIcon.style.left = 'auto';
                     }
-
                 }
             }
         }
 
         if (sidebarToggleIcon && mainContentWrapper) {
             sidebarToggleIcon.addEventListener('click', () => {
-                const isCurrentlyHidden = mainContentWrapper.classList.contains('sidebar-hidden');
                 mainContentWrapper.classList.toggle('sidebar-hidden');
-                
-                // Update icon and title
-                if (isCurrentlyHidden) { // Means we are opening it
-                    sidebarToggleIcon.innerHTML = '&laquo;'; // Change to "close" icon
-                    sidebarToggleIcon.title = translations[currentLangGlobal]?.toggleToolsBtn || "Hide Tools";
-                     // Reset icon position for open state
-                    sidebarToggleIcon.style.transform = 'none';
-                     if (document.documentElement.dir === 'rtl') {
-                        sidebarToggleIcon.style.left = '10px';
-                        sidebarToggleIcon.style.right = 'auto';
-                    } else {
-                        sidebarToggleIcon.style.right = '10px';
-                        sidebarToggleIcon.style.left = 'auto';
-                    }
-
-                } else { // Means we are closing it
-                    sidebarToggleIcon.innerHTML = '&raquo;'; // Change to "open" icon
-                    sidebarToggleIcon.title = translations[currentLangGlobal]?.showToolsBtn || "Show Tools";
-                     // CSS handles icon repositioning for hidden state, but JS sets the character
-                }
+                updateSidebarToggleIconState(); // Update based on new state and current lang
             });
         }
+        // --- End of Sidebar Toggle Script (core logic) ---
 
-        // --- Integrate with your existing switchLanguage function ---
-        const originalPageSwitchLanguageForIcon = window.switchLanguage;
-
-        window.switchLanguage = function(lang, fromDropdown = true) {
-            if (typeof originalPageSwitchLanguageForIcon === 'function' && 
-                originalPageSwitchLanguageForIcon !== window.switchLanguage) { // Prevent infinite recursion
-                originalPageSwitchLanguageForIcon(lang);
-            } else if (typeof applyLanguage === 'function' && originalPageSwitchLanguageForIcon === window.switchLanguage) {
-                // If this function has been fully overridden, call applyLanguage directly
-                // This scenario happens if the previous sidebar script completely replaced switchLanguage
-                applyLanguage(lang);
+        function applyLanguage(lang) {
+            if (!translations[lang]) {
+                console.error("No translations found for language:", lang);
+                return;
             }
+            currentLangGlobal = lang; // Update global language tracker
 
+            document.documentElement.lang = lang;
+            document.title = translations[lang].pageTitle || "Visa Information Assistant";
 
-            currentLangGlobal = lang;
-            updateSidebarToggleIconState(); // Update icon title on language change
+            const isRTL = lang === 'ar';
+            document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
+            if (chatContainer) chatContainer.dir = isRTL ? 'rtl' : 'ltr'; // Also set on main chat container if needed for specific CSS
+            
+            document.body.style.textAlign = isRTL ? 'right' : 'left';
+            
+            const elementsToAlign = '.modal-content h2, .modal-content label, .actions, .prompts, .input-row';
+            document.querySelectorAll(elementsToAlign).forEach(el => el.style.textAlign = isRTL ? 'right' : 'left');
+            document.querySelectorAll('.close-button').forEach(el => el.style.float = isRTL ? 'left' : 'right');
+
+            document.querySelectorAll('[data-translate-key]').forEach(element => {
+                const key = element.getAttribute('data-translate-key');
+                if (translations[lang][key] !== undefined) {
+                    if ((element.tagName === 'TEXTAREA' || element.tagName === 'INPUT') && element.type !== 'radio' && element.type !== 'checkbox') {
+                        element.placeholder = translations[lang][key];
+                    } else {
+                        element.textContent = translations[lang][key];
+                    }
+                } else {
+                    // console.warn("Missing translation for key:", key, "in lang:", lang);
+                }
+            });
+
+            // Call other update functions that depend on language
+            updateInputPlaceholders(lang); // Explicitly update placeholders not covered by data-translate-key
+            updateAllModalTranslations(lang); // Update modal specific texts
+            updateSidebarToggleIconState(); // Ensure sidebar icon title is updated
+        }
+
+        // Consolidated switchLanguage function
+        function switchLanguage(lang, fromDropdown = true) {
+            if (!translations[lang]) {
+                console.error("Cannot switch to unsupported language:", lang);
+                return;
+            }
+            
+            localStorage.setItem('preferredLanguage', lang); // Save preference
+            applyLanguage(lang);
 
             if (fromDropdown) {
                 const languageSwitcherDropdown = document.getElementById('languageSwitcher');
                 if (languageSwitcherDropdown) languageSwitcherDropdown.value = lang;
             }
-            // Ensure other translation updates happen
-            if (typeof updateAllModalTranslations === 'function') updateAllModalTranslations(lang);
-            if (typeof updateInputPlaceholders === 'function') updateInputPlaceholders(lang);
-        };
-        // --- End of NEW Sidebar Toggle Script ---
+        }
 
         // Initial setup on DOMContentLoaded
         document.addEventListener('DOMContentLoaded', () => {
             const languageSwitcherDropdown = document.getElementById('languageSwitcher');
-            if (languageSwitcherDropdown) {
+            let preferredLang = localStorage.getItem('preferredLanguage');
+            
+            if (preferredLang && translations[preferredLang]) {
+                currentLangGlobal = preferredLang;
+            } else if (languageSwitcherDropdown && translations[languageSwitcherDropdown.value]) {
                 currentLangGlobal = languageSwitcherDropdown.value;
             } else {
-                currentLangGlobal = localStorage.getItem('preferredLanguage') || 'fr'; // Fallback
+                currentLangGlobal = 'fr'; // Default fallback
             }
             
-            // Call the switchLanguage to set everything initially, including the icon title
-            // Pass false if your switchLanguage could cause a loop or if applyLanguage is sufficient
-            if (typeof window.switchLanguage === 'function') {
-                window.switchLanguage(currentLangGlobal, false); 
-            } else if (typeof applyLanguage === 'function') { // Fallback if switchLanguage isn't fully set up yet
-                applyLanguage(currentLangGlobal);
-                updateSidebarToggleIconState(); // Still need to update icon specifically
+            if (languageSwitcherDropdown) { // Ensure dropdown reflects the loaded language
+                languageSwitcherDropdown.value = currentLangGlobal;
             }
 
+            switchLanguage(currentLangGlobal, false); // Initialize language on load
 
-            // Ensure the main content is not hidden by default (remove class if present from previous state)
-            // Or, set initial icon state based on class
-            if(mainContentWrapper) { // Add this check
-               updateSidebarToggleIconState();
+            // Ensure the main content wrapper's sidebar icon state is correct on load
+            if (mainContentWrapper) {
+               updateSidebarToggleIconState(); // Initialize based on current class and new lang
             }
 
             // Reset Session Button Logic
@@ -436,64 +485,6 @@
                 });
             }
         });
-
-        // Make sure these helper functions are defined (they were in the previous JS)
-        // If not, you'll need to re-add or ensure they are defined elsewhere.
-        // function updateAllModalTranslations(lang) { ... }
-        // function updateInputPlaceholders(lang) { ... }
-        // translations object should also be defined with toggleToolsBtn and showToolsBtn
-        if (typeof translations !== 'undefined') {
-            if (!translations.en) translations.en = {};
-            translations.en.toggleToolsBtn = "Hide Tools";
-            translations.en.showToolsBtn = "Show Tools";
-
-            if (!translations.fr) translations.fr = {};
-            translations.fr.toggleToolsBtn = "Masquer Outils";
-            translations.fr.showToolsBtn = "Afficher Outils";
-
-            if (!translations.ar) translations.ar = {};
-            translations.ar.toggleToolsBtn = "إخفاء الأدوات";
-            translations.ar.showToolsBtn = "إظهار الأدوات";
-        } else {
-            // console.error("Translations object is not defined!");
-        }
-
-        function applyLanguage(lang) {
-            document.documentElement.lang = lang;
-            document.title = translations[lang].pageTitle;
-
-            if (lang === 'ar') {
-                chatContainer.dir = 'rtl';
-                document.body.style.textAlign = 'right'; // Basic RTL alignment for body
-                 // Specific adjustments for elements if flex order needs to change or for text-align on block elements
-                document.querySelectorAll('.modal-content h2, .modal-content label, .actions, .prompts, .input-row').forEach(el => el.style.textAlign = 'right');
-                document.querySelectorAll('.close-button').forEach(el => el.style.float = 'left'); // Adjust close button for RTL
-            } else {
-                chatContainer.dir = 'ltr';
-                document.body.style.textAlign = 'left';
-                document.querySelectorAll('.modal-content h2, .modal-content label, .actions, .prompts, .input-row').forEach(el => el.style.textAlign = 'left');
-                document.querySelectorAll('.close-button').forEach(el => el.style.float = 'right');
-            }
-
-            document.querySelectorAll('[data-translate-key]').forEach(element => {
-                const key = element.getAttribute('data-translate-key');
-                if (translations[lang][key]) {
-                    if (element.tagName === 'TEXTAREA' || element.tagName === 'INPUT') {
-                        if(element.type === 'radio') { 
-                            // Already handled by span with data-translate-key
-                        } else {
-                            element.placeholder = translations[lang][key];
-                        }
-                    } else {
-                        // For buttons, h1, h2, span, label - directly set textContent
-                        // For radio button text, it's the span next to input that has the data-translate-key
-                        element.textContent = translations[lang][key];
-                    }
-                }
-            });
-            toggleDeleteCorpusNameField(lang); 
-            toggleListItemCorpusNameField(lang); // Assuming this also takes lang for consistency
-        }
 
         function autoGrow(element) {
             if (!element) return;

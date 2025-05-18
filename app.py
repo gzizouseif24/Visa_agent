@@ -171,4 +171,5 @@ if __name__ == '__main__':
     # The imports at the top of the file (from rag_agent.agent import root_agent)
     # are sufficient, especially with WORKDIR /app in Docker.
     # The explicit sys.path manipulation here is not required when using `flask run`.
-    flask_app.run(debug=True, host='0.0.0.0', port=5000) 
+    port = int(os.environ.get("PORT", 8080)) # Default to 8080 if PORT not set
+    flask_app.run(debug=True, host='0.0.0.0', port=port) 
