@@ -25,7 +25,7 @@ ContentDict.model_rebuild() # Ensure Pydantic resolves any internal forward refe
 root_agent = Agent(
     name="RagAgent",
     # Using Gemini 2.5 Flash for best performance with RAG operations
-    model="gemini-2.5-flash-preview-04-17",
+    model="gemini-2.0-flash-lite-001",
     description="Vertex AI RAG Agent with Web Search Capabilities",
     tools=[
         create_corpus,

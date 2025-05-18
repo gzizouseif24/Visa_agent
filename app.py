@@ -7,6 +7,10 @@ import vertexai # Ensure vertexai is imported for init if not already by rag_age
 from vertexai.preview import reasoning_engines
 from markdown_it import MarkdownIt # Import MarkdownIt
 
+
+# Load environment variables from .env file
+load_dotenv()
+
 # Attempt to import the agent and trigger its __init__.py for Vertex AI setup
 try:
     from rag_agent.agent import root_agent
@@ -22,8 +26,7 @@ except Exception as e:
 logging.basicConfig(level=logging.INFO) # Changed to INFO for less verbose logging
 logger = logging.getLogger(__name__)
 
-# Load environment variables from .env file
-load_dotenv()
+
 
 flask_app = Flask(__name__)
 
@@ -171,5 +174,5 @@ if __name__ == '__main__':
     # The imports at the top of the file (from rag_agent.agent import root_agent)
     # are sufficient, especially with WORKDIR /app in Docker.
     # The explicit sys.path manipulation here is not required when using `flask run`.
-    port = int(os.environ.get("PORT", 8080)) # Default to 8080 if PORT not set
+    port = int(os.environ.get("PORT", 5000)) # Default to 5000 if PORT not set
     flask_app.run(debug=True, host='0.0.0.0', port=port) 

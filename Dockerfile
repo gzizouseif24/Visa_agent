@@ -19,6 +19,7 @@ RUN pip install --no-cache-dir --upgrade pip \
 # Copy the entire project (except for what's in .dockerignore) into the container at /app
 # This includes your app.py, rag_agent/ folder, templates/, static/, etc.
 COPY . .
+# COPY .env .env
 
 # Make port 5000 available to the world outside this container
 # This is the port your Flask app runs on (as defined in app.py)
